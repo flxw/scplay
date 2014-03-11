@@ -27,6 +27,8 @@ public slots:
 private:
     void setupTrayIcon();
     void setupSoundManager();
+    void setupControlButtons();
+
     void handleTrayIconSingleClick(void);
 
 private:

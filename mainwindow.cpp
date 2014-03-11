@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->hide();
 
     // --- other setups
+    setupControlButtons();
     setupTrayIcon();
     setupSoundManager();
 
@@ -83,6 +84,12 @@ void MainWindow::setupSoundManager() {
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
     connect(ui->prevButton,      SIGNAL(clicked()), soundManager, SLOT(previous()));
+}
+
+void MainWindow::setupControlButtons() {
+    QRect rect = QRect(5,5,65,65);
+    QRegion region = QRegion(rect,QRegion::Ellipse);
+    ui->playPauseButton->setMask(region);
 }
 
 void MainWindow::handleTrayIconSingleClick() {
