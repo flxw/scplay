@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>scplayer</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #fff;</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="playPauseButton">
     <property name="geometry">
@@ -23,18 +26,32 @@
       <height>75</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+border-style: solid;
+border-width:1px;
+border-radius:37px;
+border-color: rgba(255,72,0,.8);</string>
+    </property>
     <property name="text">
-     <string>Start</string>
+     <string>Play</string>
     </property>
    </widget>
    <widget class="QPushButton" name="prevButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>30</x>
       <y>30</y>
-      <width>81</width>
-      <height>31</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+border-style: solid;
+border-width:1px;
+border-radius:20px;
+border-color: rgba(255,72,0,.8);</string>
     </property>
     <property name="text">
      <string>|&lt;&lt;</string>
@@ -43,11 +60,18 @@
    <widget class="QPushButton" name="nextButton">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>220</x>
       <y>30</y>
-      <width>81</width>
-      <height>31</height>
+      <width>40</width>
+      <height>40</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+border-style: solid;
+border-width:1px;
+border-radius:20px;
+border-color: rgba(255,72,0,.8);</string>
     </property>
     <property name="text">
      <string>&gt;&gt;|</string>

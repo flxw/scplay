@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->hide();
 
     // --- other setups
-    setupControlButtons();
+    //setupControlButtons();
     setupTrayIcon();
     setupSoundManager();
 
@@ -54,14 +54,14 @@ void MainWindow::togglePlayPauseButtonIcon() {
     static bool isPlaying = true;
 
     if (isPlaying) {
-        ui->playPauseButton->setText("Pause");
+        ui->playPauseButton->setText("| |");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
 
         isPlaying = false;
     } else {
-        ui->playPauseButton->setText("Play");
+        ui->playPauseButton->setText("|>");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
@@ -84,12 +84,6 @@ void MainWindow::setupSoundManager() {
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
     connect(ui->prevButton,      SIGNAL(clicked()), soundManager, SLOT(previous()));
-}
-
-void MainWindow::setupControlButtons() {
-    QRect rect = QRect(5,5,65,65);
-    QRegion region = QRegion(rect,QRegion::Ellipse);
-    ui->playPauseButton->setMask(region);
 }
 
 void MainWindow::handleTrayIconSingleClick() {
