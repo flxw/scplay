@@ -2,11 +2,9 @@
 #define MAINWINDOW_H
 
 # include <QMainWindow>
-# include <QMediaPlayer>
-# include <QMediaPlaylist>
-# include <QNetworkAccessManager>
-# include <QNetworkReply>
 # include <QSystemTrayIcon>
+
+# include "soundmanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,22 +21,18 @@ public:
     bool event(QEvent* e);
 
 public slots:
-    void startPlaying();
-    void processStreamLocationRequestAnswer(QNetworkReply *reply);
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
+    void togglePlayPauseButtonIcon();
 
 private:
     void setupTrayIcon();
+    void setupSoundManager();
     void handleTrayIconSingleClick(void);
 
 private:
-    Ui::MainWindow *ui;
+    SoundManager *soundManager;
 
-    QMediaPlayer* player;
-    QMediaPlaylist* playlist;
-
-    QNetworkAccessManager* nwa;
-    QString streamLocation;
+    Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;
 };
 

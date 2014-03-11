@@ -1,28 +1,18 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-# include <QJsonDocument>
-# include <QJsonObject>
-# include <QJsonValue>
-# include <QNetworkRequest>
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->hide();
 
-    player = new QMediaPlayer(this);
-    nwa = new QNetworkAccessManager(this);
-
+    // --- other setups
     setupTrayIcon();
+    setupSoundManager();
 
     // --- connections
-    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(startPlaying()));
-    connect(nwa, SIGNAL(finished(QNetworkReply*)), this, SLOT(processStreamLocationRequestAnswer(QNetworkReply*)));
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
-
-    nwa->get(QNetworkRequest(QUrl("http://api.sndcdn.com/i1/tracks/137766501/streams?client_id=798808c14d25fc803a4f484e821ca63a")));
-    this->hide();
+    connect(ui->playPauseButton, SIGNAL(clicked()), this, SLOT(togglePlayPauseButtonIcon()), Qt::QueuedConnection);
 }
 
 MainWindow::~MainWindow()
@@ -41,35 +31,14 @@ bool MainWindow::event(QEvent* e)
         case QEvent::WindowDeactivate :
             this->hide();
             break;
+
+        default: break;
     }
 
     return QMainWindow::event(e) ;
 }
 
 // --- public slots
-void MainWindow::startPlaying()
-{
-    player->setMedia(QUrl(streamLocation));
-    player->play();
-}
-
-void MainWindow::processStreamLocationRequestAnswer(QNetworkReply* reply) {
-    if (reply->error() == QNetworkReply::NoError) {
-        QByteArray replyBytes = reply->readAll();
-        QString replyString = QString(replyBytes);
-        QJsonDocument jsonDocument = QJsonDocument::fromJson(replyString.toUtf8());
-
-        qDebug(replyString.toStdString().c_str());
-
-        QJsonValue streamUrl = jsonDocument.object()["http_mp3_128_url"];
-
-        if (streamUrl.isString()) {
-            streamLocation = streamUrl.toString();
-            this->ui->pushButton->setEnabled(true);
-        }
-    }
-}
-
 void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason) {
     switch (activationReason) {
         case QSystemTrayIcon::Trigger:
@@ -80,10 +49,40 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
     }
 }
 
+void MainWindow::togglePlayPauseButtonIcon() {
+    static bool isPlaying = true;
+
+    if (isPlaying) {
+        ui->playPauseButton->setText("Pause");
+
+        disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
+        connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
+
+        isPlaying = false;
+    } else {
+        ui->playPauseButton->setText("Play");
+
+        disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
+        connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
+
+        isPlaying = true;
+    }
+}
+
 // --- private functions
 void MainWindow::setupTrayIcon() {
     trayIcon = new QSystemTrayIcon(QIcon(":/icons/white.png"), this);
     trayIcon->show();
+
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
+}
+
+void MainWindow::setupSoundManager() {
+    soundManager = new SoundManager(this);
+
+    connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
+    connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
+    connect(ui->prevButton,      SIGNAL(clicked()), soundManager, SLOT(previous()));
 }
 
 void MainWindow::handleTrayIconSingleClick() {
