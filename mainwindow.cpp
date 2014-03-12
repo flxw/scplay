@@ -1,5 +1,7 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+# include "mainwindow.h"
+# include "ui_mainwindow.h"
+
+# include <QMenu>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow)
@@ -9,8 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // --- other setups
     //setupControlButtons();
-    setupTrayIcon();
     setupSoundManager();
+    setupTrayIcon();
 
     // --- connections
     connect(ui->playPauseButton, SIGNAL(clicked()), this, SLOT(togglePlayPauseButtonIcon()), Qt::QueuedConnection);
@@ -25,15 +27,15 @@ MainWindow::~MainWindow()
 bool MainWindow::event(QEvent* e)
 {
     switch(e->type()) {
-        case QEvent::WindowActivate :
-            // gained focus
-            break;
+    case QEvent::WindowActivate :
+        // gained focus
+        break;
 
-        case QEvent::WindowDeactivate :
-            this->hide();
-            break;
+    case QEvent::WindowDeactivate :
+        this->hide();
+        break;
 
-        default: break;
+    default: break;
     }
 
     return QMainWindow::event(e) ;
@@ -42,10 +44,10 @@ bool MainWindow::event(QEvent* e)
 // --- public slots
 void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason) {
     switch (activationReason) {
-        case QSystemTrayIcon::Trigger:
-            handleTrayIconSingleClick();
-            break;
-        default: qDebug("Unhandled tray icon activation: %i", (int)activationReason);
+    case QSystemTrayIcon::Trigger:
+        handleTrayIconSingleClick();
+        break;
+    default: qDebug("Unhandled tray icon activation: %i", (int)activationReason);
 
     }
 }
@@ -54,14 +56,14 @@ void MainWindow::togglePlayPauseButtonIcon() {
     static bool isPlaying = true;
 
     if (isPlaying) {
-        ui->playPauseButton->setText("\u2016");
+        ui->playPauseButton->setText(" \u2016");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
 
         isPlaying = false;
     } else {
-        ui->playPauseButton->setText("\u25B6");
+        ui->playPauseButton->setText("\u007C\u007C");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
@@ -73,6 +75,16 @@ void MainWindow::togglePlayPauseButtonIcon() {
 // --- private functions
 void MainWindow::setupTrayIcon() {
     trayIcon = new QSystemTrayIcon(QIcon(":/icons/white.png"), this);
+
+    QMenu* trayMenu = new QMenu();
+
+    trayMenu->addAction("\u25B6 / \u2016", ui->playPauseButton, SIGNAL(clicked()));
+    trayMenu->addAction("\u25B6\u25B6\u007C", soundManager, SLOT(next()));
+    trayMenu->addAction("\u007C\u25C0\u25C0", soundManager, SLOT(previous()));
+    trayMenu->addAction("Exit", this, SLOT(close()));
+    trayMenu->setStyleSheet(QString("text-align: center;"));
+
+    trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
 
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
@@ -80,6 +92,8 @@ void MainWindow::setupTrayIcon() {
 
 void MainWindow::setupSoundManager() {
     soundManager = new SoundManager(this);
+
+    connect(soundManager, SIGNAL(finished()), this, SLOT(togglePlayPauseButtonIcon()));
 
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));

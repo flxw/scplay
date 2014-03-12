@@ -11,10 +11,15 @@ SoundManager::SoundManager(QObject *parent) :
     networkManager = new QNetworkAccessManager(this);
 
     connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(handleStreamLocationReply(QNetworkReply*)));
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(handlePlayerStateChange(QMediaPlayer::State)));
 }
 
 
 // --- public functions
+bool SoundManager::isPlaying() {
+    return (player->state() == QMediaPlayer::PlayingState);
+}
+
 // --- public slots
 void SoundManager::play() {
     // stub - to be removed
@@ -61,4 +66,8 @@ void SoundManager::handleStreamLocationReply(QNetworkReply *reply) {
             player->play();
         }
     }
+}
+
+void SoundManager::handlePlayerStateChange(QMediaPlayer::State state) {
+    if (state == QMediaPlayer::StoppedState) emit finished();
 }

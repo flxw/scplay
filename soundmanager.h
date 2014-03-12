@@ -16,6 +16,8 @@ class SoundManager : public QObject
 public:
     explicit SoundManager(QObject *parent = 0);
 
+    bool isPlaying();
+
 public slots:
     void play();
     void pause();
@@ -26,6 +28,7 @@ public slots:
     void enqueueSound(int id);
 
     void handleStreamLocationReply(QNetworkReply* reply);
+    void handlePlayerStateChange(QMediaPlayer::State state);
 
 signals:
     void finished(); // emitted when the last song has finished playing
