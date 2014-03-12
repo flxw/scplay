@@ -22,7 +22,7 @@ protected:
     virtual void fillModel() = 0;
 
 protected slots:
-    virtual void updateModel() = 0;
+    virtual void updateModel(QList<SoundListItem> newItems) = 0;
 
     // --- attributes
 protected:

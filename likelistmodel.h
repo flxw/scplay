@@ -2,6 +2,7 @@
 #define LIKELISTMODEL_H
 
 # include "soundlistmodel.h"
+# include "soundlistitem.h"
 
 class LikeListModel : public SoundListModel
 {
@@ -12,7 +13,7 @@ protected:
     void fillModel();
 
 protected slots:
-    void updateModel();
+    void updateModel(QList<SoundListItem> newItems);
 
 };
 

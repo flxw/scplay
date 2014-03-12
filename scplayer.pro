@@ -15,13 +15,15 @@ SOURCES += main.cpp\
     soundmanager.cpp \
     soundlistmodel.cpp \
     soundlistitem.cpp \
-    likelistmodel.cpp
+    likelistmodel.cpp \
+    soundcloudapi.cpp
 
 HEADERS  += mainwindow.h \
     soundmanager.h \
     soundlistmodel.h \
     soundlistitem.h \
-    likelistmodel.h
+    likelistmodel.h \
+    soundcloudapi.h
 
 FORMS    += mainwindow.ui
 

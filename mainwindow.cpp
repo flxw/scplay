@@ -62,20 +62,26 @@ void MainWindow::togglePlayPauseButtonIcon() {
     static bool isPlaying = true;
 
     if (isPlaying) {
-        ui->playPauseButton->setText("\u007C\u007C");
-
-        disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
-        connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
-
+        setPauseButtonIcon();
         isPlaying = false;
     } else {
-        ui->playPauseButton->setText(" \u25B6");
-
-        disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
-        connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
-
+        setPlayButtonIcon();
         isPlaying = true;
     }
+}
+
+void MainWindow::setPlayButtonIcon() {
+    ui->playPauseButton->setText(" \u25B6");
+
+    disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
+    connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
+}
+
+void MainWindow::setPauseButtonIcon() {
+    ui->playPauseButton->setText("\u007C\u007C");
+
+    disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
+    connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
 }
 
 // --- private functions
@@ -98,7 +104,8 @@ void MainWindow::setupTrayIcon() {
 void MainWindow::setupSoundManager() {
     soundManager = new SoundManager(this);
 
-    connect(soundManager, SIGNAL(finished()), this, SLOT(togglePlayPauseButtonIcon()));
+    connect(soundManager, SIGNAL(finished()), this, SLOT(setPlayButtonIcon()));
+    connect(soundManager, SIGNAL(started()), this, SLOT(setPauseButtonIcon()));
 
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
@@ -117,4 +124,5 @@ void MainWindow::setupSoundListViews() {
     likeListModel = new LikeListModel(this);
 
     ui->songView->setModel(likeListModel);
+    //connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT
 }

@@ -1,9 +1,5 @@
 # include "likelistmodel.h"
-
-# include <QFile>
-# include <QJsonDocument>
-# include <QJsonArray>
-# include <QJsonObject>
+# include "soundcloudapi.h"
 
 LikeListModel::LikeListModel(QObject *parent) : SoundListModel(parent)
 {
@@ -12,26 +8,15 @@ LikeListModel::LikeListModel(QObject *parent) : SoundListModel(parent)
 
 // --- protected functions
 void LikeListModel::fillModel() {
-    QFile fewlikes(":/fewlikes.json");
+    SoundCloudApi& scApi = SoundCloudApi::getInstance();
 
-    if (!fewlikes.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+    connect(&scApi, SIGNAL(likesReceived(QList<SoundListItem>)), this, SLOT(updateModel(QList<SoundListItem>)));
 
-    QString json = fewlikes.readAll();
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(json.toUtf8());
-    QJsonArray jsonArray = jsonDocument.array();
-    QJsonObject songObject;
-
-    for (QJsonArray::const_iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
-        SoundListItem listItem;
-
-        songObject = (*it).toObject();
-        listItem.setId(songObject["id"].toInt());
-        listItem.setTitle(songObject["title"].toString());
-        listItem.setUser(songObject["user"].toObject()["username"].toString());
-
-        soundItems.append(listItem);
-    }
+    scApi.getLikes();
 }
 
-void LikeListModel::updateModel() {
+void LikeListModel::updateModel(QList<SoundListItem> newItems) {
+    this->soundItems = newItems;
+
+    emit dataChanged(QModelIndex(), QModelIndex());
 }

@@ -24,6 +24,8 @@ public:
 public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
     void togglePlayPauseButtonIcon();
+    void setPlayButtonIcon();
+    void setPauseButtonIcon();
 
 private:
     void setupTrayIcon();
