@@ -32,7 +32,9 @@ bool MainWindow::event(QEvent* e)
         break;
 
     case QEvent::WindowDeactivate :
+#ifndef QT_DEBUG
         this->hide();
+#endif
         break;
 
     default: break;
@@ -56,14 +58,14 @@ void MainWindow::togglePlayPauseButtonIcon() {
     static bool isPlaying = true;
 
     if (isPlaying) {
-        ui->playPauseButton->setText(" \u2016");
+        ui->playPauseButton->setText("\u007C\u007C");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
 
         isPlaying = false;
     } else {
-        ui->playPauseButton->setText("\u007C\u007C");
+        ui->playPauseButton->setText(" \u25B6");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
