@@ -12,10 +12,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    soundmanager.cpp
+    soundmanager.cpp \
+    soundlistmodel.cpp \
+    soundlistitem.cpp
 
 HEADERS  += mainwindow.h \
-    soundmanager.h
+    soundmanager.h \
+    soundlistmodel.h \
+    soundlistitem.h
 
 FORMS    += mainwindow.ui
 

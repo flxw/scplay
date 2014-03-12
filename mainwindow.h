@@ -5,6 +5,7 @@
 # include <QSystemTrayIcon>
 
 # include "soundmanager.h"
+# include "soundlistmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,11 +28,14 @@ public slots:
 private:
     void setupTrayIcon();
     void setupSoundManager();
+    void setupSoundListViews();
+
 
     void handleTrayIconSingleClick(void);
 
 private:
     SoundManager *soundManager;
+    SoundListModel *soundListModel;
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;

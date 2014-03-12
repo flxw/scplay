@@ -10,9 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->hide();
 
     // --- other setups
-    //setupControlButtons();
     setupSoundManager();
     setupTrayIcon();
+    setupSoundListViews();
 
     // --- connections
     connect(ui->playPauseButton, SIGNAL(clicked()), this, SLOT(togglePlayPauseButtonIcon()), Qt::QueuedConnection);
@@ -46,11 +46,13 @@ bool MainWindow::event(QEvent* e)
 // --- public slots
 void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason) {
     switch (activationReason) {
-    case QSystemTrayIcon::Trigger:
-        handleTrayIconSingleClick();
-        break;
-    default: qDebug("Unhandled tray icon activation: %i", (int)activationReason);
+        case QSystemTrayIcon::Trigger:
+            handleTrayIconSingleClick();
+            break;
 
+        default:
+            qDebug("Unhandled tray icon activation: %i", (int)activationReason);
+            break;
     }
 }
 
@@ -84,7 +86,6 @@ void MainWindow::setupTrayIcon() {
     trayMenu->addAction("\u25B6\u25B6\u007C", soundManager, SLOT(next()));
     trayMenu->addAction("\u007C\u25C0\u25C0", soundManager, SLOT(previous()));
     trayMenu->addAction("Exit", this, SLOT(close()));
-    trayMenu->setStyleSheet(QString("text-align: center;"));
 
     trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
@@ -108,4 +109,10 @@ void MainWindow::handleTrayIconSingleClick() {
     // move() moves the left-upper corner of the window to the specified position
     this->move(cursorPosition.x() - width(), cursorPosition.y() + 20);
     this->show();
+}
+
+void MainWindow::setupSoundListViews() {
+    soundListModel = new SoundListModel(this);
+
+    ui->songView->setModel(soundListModel);
 }
