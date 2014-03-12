@@ -14,6 +14,9 @@ public:
 
     bool isPlaying();
 
+    void playUrl(const QUrl& url);
+    bool isUrlStillValid(const QUrl &url);
+
 public slots:
     void play();
     void pause();
@@ -31,13 +34,18 @@ signals:
     void started();
     void nextSongStarted(); // emitted when the next song is begun
 
+
     // --- attributes ---
 public:
 private:
     QMediaPlayer*   player;
     QMediaPlaylist* playlist;
 
+    QHash<int, QUrl> idsForUrls;
+
     QString streamLocation;
+
+    int lastRequestedSong;
 };
 
 #endif // SOUNDMANAGER_H
