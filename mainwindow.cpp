@@ -65,6 +65,10 @@ void MainWindow::handlePlayRequest(QModelIndex index) {
     soundManager->playSound(soundItem.getId());
 }
 
+void MainWindow::handleNewSongDuration(int d) {
+    ui->progressBar->setRange(0, d);
+}
+
 void MainWindow::togglePlayPauseButtonIcon() {
     if (soundManager->isPlaying()) {
         setPauseButtonIcon();
@@ -107,8 +111,10 @@ void MainWindow::setupTrayIcon() {
 void MainWindow::setupSoundManager() {
     soundManager = new SoundManager(this);
 
-    connect(soundManager, SIGNAL(finished()), this, SLOT(setPlayButtonIcon()));
     connect(soundManager, SIGNAL(started()),  this, SLOT(setPauseButtonIcon()));
+    connect(soundManager, SIGNAL(finished()), this, SLOT(setPlayButtonIcon()));
+    connect(soundManager, SIGNAL(newSongDuration(int)), this, SLOT(handleNewSongDuration(int)));
+    connect(soundManager, SIGNAL(playTimeElapsed(int)), ui->progressBar, SLOT(setValue(int)));
 
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));

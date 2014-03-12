@@ -12,10 +12,12 @@ class SoundManager : public QObject
 public:
     explicit SoundManager(QObject *parent = 0);
 
+    qint64 getDuration();
+
     bool isPlaying();
+    bool isUrlStillValid(const QUrl &url);
 
     void playUrl(const QUrl& url);
-    bool isUrlStillValid(const QUrl &url);
 
 public slots:
     void play();
@@ -28,11 +30,15 @@ public slots:
 
     void handlePlayerStateChange(QMediaPlayer::State state);
     void receiveStreamUrl(int id, QUrl url);
+    void handleNewDuration(qint64 d);
+    void handleNewPosition(qint64 p);
 
 signals:
     void finished(); // emitted when the last song has finished playing
     void started();
     void nextSongStarted(); // emitted when the next song is begun
+    void playTimeElapsed(int duration);
+    void newSongDuration(int duration);
 
 
     // --- attributes ---

@@ -7,6 +7,8 @@ SoundManager::SoundManager(QObject *parent) :
     player = new QMediaPlayer(this);
 
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(handlePlayerStateChange(QMediaPlayer::State)));
+    connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(handleNewDuration(qint64)));
+    connect(player, SIGNAL(positionChanged(qint64)), this, SLOT(handleNewPosition(qint64)));
     connect(&SoundCloudApi::getInstance(), SIGNAL(streamUrlReceived(int,QUrl)), this, SLOT(receiveStreamUrl(int,QUrl)));
 }
 
@@ -16,22 +18,22 @@ bool SoundManager::isPlaying() {
     return (player->state() == QMediaPlayer::PlayingState);
 }
 
-void SoundManager::playUrl(const QUrl &url) {
-    player->stop();
-    player->setMedia(url);
-    player->play();
-}
-
 bool SoundManager::isUrlStillValid(const QUrl &url) {
     QString queryString = url.toString();
     int expireStringIndex = queryString.indexOf("Expires=") + 8;
     QString timeString = queryString.mid(expireStringIndex, 10);
 
-    int exp_msecs = timeString.toInt();
-    int cur_msecs = QDateTime::currentMSecsSinceEpoch();
+    qint64 exp_msecs = timeString.toInt();
+    qint64 cur_msecs = QDateTime::currentMSecsSinceEpoch();
 
     if (cur_msecs < exp_msecs) return true;
     else return false;
+}
+
+void SoundManager::playUrl(const QUrl &url) {
+    player->stop();
+    player->setMedia(url);
+    player->play();
 }
 
 // --- public slots
@@ -84,4 +86,12 @@ void SoundManager::handlePlayerStateChange(QMediaPlayer::State state) {
 void SoundManager::receiveStreamUrl(int id, QUrl url) {
     idsForUrls.insert(id, url);
     playUrl(url);
+}
+
+void SoundManager::handleNewDuration(qint64 d) {
+    emit newSongDuration((int) d/1000);
+}
+
+void SoundManager::handleNewPosition(qint64 p) {
+    emit playTimeElapsed((int) p/1000);
 }
