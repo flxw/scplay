@@ -2,6 +2,12 @@
 
 SoundListModel::SoundListModel(QObject *parent) : QAbstractListModel(parent) { }
 
+const SoundListItem &SoundListModel::getSongItem(QModelIndex &index) const {
+    if (!index.isValid()) return SoundListItem();
+
+    return soundItems.at(index.row());
+}
+
 QVariant SoundListModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid()) {
         return QVariant();

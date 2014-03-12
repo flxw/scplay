@@ -13,6 +13,8 @@ class SoundListModel : public QAbstractListModel
 public:
     explicit SoundListModel(QObject *parent = 0);
 
+    const SoundListItem& getSongItem(QModelIndex& index) const;
+
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 

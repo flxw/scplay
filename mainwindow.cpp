@@ -58,6 +58,13 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
     }
 }
 
+void MainWindow::handlePlayRequest(QModelIndex index) {
+    const SoundListModel* currentModel = (SoundListModel*)ui->songView->model();
+    const SoundListItem&  soundItem = currentModel->getSongItem(index);
+
+    soundManager->playSound(soundItem.getId());
+}
+
 void MainWindow::togglePlayPauseButtonIcon() {
     static bool isPlaying = true;
 
@@ -104,8 +111,8 @@ void MainWindow::setupTrayIcon() {
 void MainWindow::setupSoundManager() {
     soundManager = new SoundManager(this);
 
-    connect(soundManager, SIGNAL(finished()), this, SLOT(setPlayButtonIcon()));
-    connect(soundManager, SIGNAL(started()), this, SLOT(setPauseButtonIcon()));
+    connect(soundManager, SIGNAL(finished()), this, SLOT(togglePlayPauseButtonIcon()));
+    connect(soundManager, SIGNAL(started()),  this, SLOT(togglePlayPauseButtonIcon()));
 
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
@@ -124,5 +131,5 @@ void MainWindow::setupSoundListViews() {
     likeListModel = new LikeListModel(this);
 
     ui->songView->setModel(likeListModel);
-    //connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(handlePlayRequest(QModelIndex)));
 }

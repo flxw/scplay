@@ -5,7 +5,7 @@ SoundListItem::SoundListItem()
 }
 
 // --- public functions
-QString SoundListItem::getTitle() {
+QString SoundListItem::getTitle() const {
     return title;
 }
 
@@ -13,7 +13,7 @@ void SoundListItem::setTitle(QString t) {
     title = t;
 }
 
-QString SoundListItem::getUser() {
+QString SoundListItem::getUser() const {
     return user;
 }
 
@@ -21,7 +21,7 @@ void SoundListItem::setUser(QString u) {
     user = u;
 }
 
-int SoundListItem::getId() {
+int SoundListItem::getId() const {
     return id;
 }
 
