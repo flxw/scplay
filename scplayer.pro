@@ -14,12 +14,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     soundmanager.cpp \
     soundlistmodel.cpp \
-    soundlistitem.cpp
+    soundlistitem.cpp \
+    likelistmodel.cpp
 
 HEADERS  += mainwindow.h \
     soundmanager.h \
     soundlistmodel.h \
-    soundlistitem.h
+    soundlistitem.h \
+    likelistmodel.h
 
 FORMS    += mainwindow.ui
 

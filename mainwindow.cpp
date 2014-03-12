@@ -3,6 +3,8 @@
 
 # include <QMenu>
 
+# include <likelistmodel.h>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -112,7 +114,7 @@ void MainWindow::handleTrayIconSingleClick() {
 }
 
 void MainWindow::setupSoundListViews() {
-    soundListModel = new SoundListModel(this);
+    likeListModel = new LikeListModel(this);
 
-    ui->songView->setModel(soundListModel);
+    ui->songView->setModel(likeListModel);
 }

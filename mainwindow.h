@@ -35,7 +35,7 @@ private:
 
 private:
     SoundManager *soundManager;
-    SoundListModel *soundListModel;
+    SoundListModel *likeListModel, *playlistModel;
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;

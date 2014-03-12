@@ -3,6 +3,7 @@
 
 # include <QAbstractListModel>
 # include <QList>
+# include <QTimer>
 
 # include "soundlistitem.h"
 
@@ -17,16 +18,15 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-signals:
+protected:
+    virtual void fillModel() = 0;
 
-public slots:
-
-private:
-    void parseJson();
+protected slots:
+    virtual void updateModel() = 0;
 
     // --- attributes
-public:
-private:
+protected:
+    QTimer updateTimer;
     QList<SoundListItem> soundItems;
 };
 
