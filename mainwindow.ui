@@ -14,7 +14,23 @@
    <string>scplayer</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #fff;</string>
+   <string notr="true">* {
+	background-color: #fff;
+}
+
+QPushButton {
+	border-style: solid;
+	border-width:2px;
+	border-color: rgba(255,72,0,.8);
+}
+
+QPushButton:hover {
+	background-color: #fffafa;
+}
+
+QPushButton:pressed {
+	background-color: #fdf5e6;
+}</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="playPauseButton">
@@ -26,15 +42,18 @@
       <height>75</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
     <property name="styleSheet">
-     <string notr="true">background-color: white;
-border-style: solid;
-border-width:1px;
-border-radius:37px;
-border-color: rgba(255,72,0,.8);</string>
+     <string notr="true">QPushButton {
+	border-radius:37px;
+}</string>
     </property>
     <property name="text">
-     <string>Play</string>
+     <string> ▶</string>
     </property>
    </widget>
    <widget class="QPushButton" name="prevButton">
@@ -47,14 +66,12 @@ border-color: rgba(255,72,0,.8);</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: white;
-border-style: solid;
-border-width:1px;
-border-radius:20px;
-border-color: rgba(255,72,0,.8);</string>
+     <string notr="true">QPushButton {
+	border-radius:20px;
+}</string>
     </property>
     <property name="text">
-     <string>|&lt;&lt;</string>
+     <string>|◀◀ </string>
     </property>
    </widget>
    <widget class="QPushButton" name="nextButton">
@@ -67,14 +84,12 @@ border-color: rgba(255,72,0,.8);</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: white;
-border-style: solid;
-border-width:1px;
-border-radius:20px;
-border-color: rgba(255,72,0,.8);</string>
+     <string notr="true">QPushButton {
+	border-radius:20px;
+}</string>
     </property>
     <property name="text">
-     <string>&gt;&gt;|</string>
+     <string> ▶▶|</string>
     </property>
    </widget>
   </widget>

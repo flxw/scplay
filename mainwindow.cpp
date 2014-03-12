@@ -54,14 +54,14 @@ void MainWindow::togglePlayPauseButtonIcon() {
     static bool isPlaying = true;
 
     if (isPlaying) {
-        ui->playPauseButton->setText("| |");
+        ui->playPauseButton->setText("\u2016");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
 
         isPlaying = false;
     } else {
-        ui->playPauseButton->setText("|>");
+        ui->playPauseButton->setText("\u25B6");
 
         disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
         connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
