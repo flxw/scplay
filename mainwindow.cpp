@@ -52,6 +52,9 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
             handleTrayIconSingleClick();
             break;
 
+        case QSystemTrayIcon::Context:
+            break;
+
         default:
             qDebug("Unhandled tray icon activation: %i", (int)activationReason);
             break;
