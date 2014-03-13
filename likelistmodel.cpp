@@ -3,7 +3,6 @@
 
 LikeListModel::LikeListModel(QObject *parent) : SoundListModel(parent)
 {
-    fillModel();
 }
 
 // --- protected functions

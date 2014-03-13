@@ -2,25 +2,30 @@
 # include "ui_mainwindow.h"
 
 # include <QMenu>
+# include <QPropertyAnimation>
 
 # include "likelistmodel.h"
 # include "soundcloudapi.h"
+# include "enterusernamewidget.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow){
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
+{
     ui->setupUi(this);
 
     this->hide();
-
-    SoundCloudApi::getInstance().setUserId(62853215);
 
     // --- other setups
     setupSoundManager();
     setupTrayIcon();
     setupSoundListViews();
+    setupWelcomeScreen();
 
     // -- connections
     connect(ui->prevButton, SIGNAL(clicked()), this, SLOT(playPreviousSong()));
     connect(ui->nextButton, SIGNAL(clicked()), this, SLOT(playNextSong()));
+
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), likeListModel, SLOT(fillModel()));
+    //connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), playListModel, SLOT(fillModel()));
 }
 
 MainWindow::~MainWindow()
@@ -132,7 +137,8 @@ void MainWindow::setupTrayIcon() {
     trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
 
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
 }
 
 void MainWindow::setupSoundManager() {
@@ -163,4 +169,20 @@ void MainWindow::setupSoundListViews() {
 
     ui->songView->setModel(likeListModel);
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(handlePlayRequest(QModelIndex)));
+}
+
+void MainWindow::setupWelcomeScreen() {
+    QFrame*  helloUserFrame  = new QFrame(this);
+    QWidget* helloUserScreen = new EnterUserNameWidget(helloUserFrame);
+
+    QPropertyAnimation *slideOutAnimation = new QPropertyAnimation(helloUserFrame, "geometry");
+
+    slideOutAnimation->setDuration(500);
+    slideOutAnimation->setStartValue(QRect(0,0, 300, 400));
+    slideOutAnimation->setEndValue(QRect(-300, 0, 300, 400));
+
+    helloUserFrame->setMinimumSize(this->size());
+    helloUserFrame->setStyleSheet("background-color: #333;");
+
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), slideOutAnimation, SLOT(start()));
 }

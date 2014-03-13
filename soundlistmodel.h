@@ -20,10 +20,8 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-protected:
-    virtual void fillModel() = 0;
-
 protected slots:
+    virtual void fillModel() = 0;
     virtual void updateModel(QList<SoundListItem> newItems) = 0;
 
     // --- attributes

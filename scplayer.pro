@@ -16,16 +16,19 @@ SOURCES += main.cpp\
     soundlistmodel.cpp \
     soundlistitem.cpp \
     likelistmodel.cpp \
-    soundcloudapi.cpp
+    soundcloudapi.cpp \
+    enterusernamewidget.cpp
 
 HEADERS  += mainwindow.h \
     soundmanager.h \
     soundlistmodel.h \
     soundlistitem.h \
     likelistmodel.h \
-    soundcloudapi.h
+    soundcloudapi.h \
+    enterusernamewidget.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    enterusernamewidget.ui
 
 RESOURCES += \
     resources.qrc

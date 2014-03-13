@@ -37,6 +37,7 @@ private:
     void setupTrayIcon();
     void setupSoundManager();
     void setupSoundListViews();
+    void setupWelcomeScreen();
 
     void handleTrayIconSingleClick(void);
 

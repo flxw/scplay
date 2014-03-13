@@ -20,6 +20,7 @@ public:
     void getStreamUrl(int songId);
     void getLikes();
 
+public slots:
     void setUserPermaLink(QString name);
     void setUserId(int userId);
 
@@ -27,6 +28,7 @@ signals:
     void streamUrlReceived(int songId, QUrl streamUrl);
     void likesReceived(QList<SoundListItem> likes);
     void isReady(); // emitted when a valid profile id has been set
+    void badUserIdGiven();
 
 
 // === privates =================================

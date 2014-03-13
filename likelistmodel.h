@@ -9,10 +9,8 @@ class LikeListModel : public SoundListModel
 public:
     LikeListModel(QObject *parent);
 
-protected:
-    void fillModel();
-
 protected slots:
+    void fillModel();
     void updateModel(QList<SoundListItem> newItems);
 
 };
