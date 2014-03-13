@@ -4,6 +4,8 @@
 # include <QJsonArray>
 # include <QJsonObject>
 
+# define API_KEY "798808c14d25fc803a4f484e821ca63a"
+
 // --- public methods
 SoundCloudApi& SoundCloudApi::getInstance() {
     static SoundCloudApi instance; // Guaranteed to be destroyed.
@@ -12,24 +14,36 @@ SoundCloudApi& SoundCloudApi::getInstance() {
 }
 
 void SoundCloudApi::getStreamUrl(int songId) {
-    static QString urlTemplate("http://api.sndcdn.com/i1/tracks/%1/streams?client_id=%2");
+    static QString urlTemplate("http://api.sndcdn.com/i1/tracks/%1/streams?client_id=" API_KEY);
 
-    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(songId).arg(apiKey))));
+    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(songId))));
 
     waitingStreamUrlReplies.insert(reply, songId);
 }
 
 void SoundCloudApi::getLikes() {
-    static QString urlTemplate("http://api.soundcloud.com/users/%1/favorites.json?client_id=%2");
+    static QString urlTemplate("http://api.soundcloud.com/users/%1/favorites.json?client_id=" API_KEY);
 
-    networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId).arg(apiKey))));
+    networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
+}
+
+/* resolves the soundcloud username to the internal user id */
+void SoundCloudApi::setUserPermaLink(QString name) {
+    static QString urlTemplate("http://api.soundcloud.com/resolve.json?url=http://soundcloud.com/%1&client_id=" API_KEY);
+
+    waitingUserIdReply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
+}
+
+void SoundCloudApi::setUserId(int userId) {
+    this->userId = userId;
+    emit isReady();
 }
 
 
 // --- private methods
 SoundCloudApi::SoundCloudApi() {
-    this->apiKey = "798808c14d25fc803a4f484e821ca63a";
-    this->userId = 62853215;
+    userId = -1;
+    waitingUserIdReply = NULL;
 
     networkManager = new QNetworkAccessManager(this);
     connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(handleFinishedRequest(QNetworkReply*)));
@@ -40,6 +54,8 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
         if (waitingStreamUrlReplies.contains(reply)) {
             handleStreamUrlReply(reply, waitingStreamUrlReplies.take(reply));
+        } else if (reply == waitingUserIdReply) {
+            handleUserIdReply(reply);
         } else {
             handleLikeReply(reply);
         }
@@ -77,4 +93,17 @@ void SoundCloudApi::handleLikeReply(QNetworkReply *reply) {
     }
 
     emit likesReceived(soundItems);
+}
+
+void SoundCloudApi::handleUserIdReply(QNetworkReply* reply) {
+    waitingUserIdReply  = NULL;
+    QString replyString = reply->readAll();
+
+    bool ok = false;
+    int id = replyString.mid(32, (replyString.indexOf(".json") - 33)).toInt(&ok);
+
+    if (ok && id > 0) {
+        userId = id;
+        emit isReady();
+    }
 }

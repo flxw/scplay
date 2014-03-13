@@ -20,12 +20,16 @@ public:
     void getStreamUrl(int songId);
     void getLikes();
 
+    void setUserPermaLink(QString name);
+    void setUserId(int userId);
+
 signals:
     void streamUrlReceived(int songId, QUrl streamUrl);
     void likesReceived(QList<SoundListItem> likes);
+    void isReady(); // emitted when a valid profile id has been set
 
-public slots:
 
+// === privates =================================
 private:
     explicit SoundCloudApi();
     SoundCloudApi(SoundCloudApi const&);   // Don't Implement
@@ -35,13 +39,15 @@ private slots:
     void handleFinishedRequest(QNetworkReply *reply);
     void handleStreamUrlReply(QNetworkReply *reply, int id);
     void handleLikeReply(QNetworkReply *reply);
+    void handleUserIdReply(QNetworkReply *reply);
 
 // --- attributes
 private:
     QHash<QNetworkReply*, int> waitingStreamUrlReplies;
+    QNetworkReply* waitingUserIdReply;
 
     QNetworkAccessManager* networkManager;
-    QString apiKey;
+
     int userId;
 };
 #endif // SOUNDCLOUDAPI_H

@@ -3,16 +3,15 @@
 
 # include <QMenu>
 
-# include <likelistmodel.h>
+# include "likelistmodel.h"
+# include "soundcloudapi.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow){
     ui->setupUi(this);
 
-    ui->playPauseButton->setDisabled(true);
-    ui->prevButton->setDisabled(true);
-    ui->nextButton->setDisabled(true);
-
     this->hide();
+
+    SoundCloudApi::getInstance().setUserId(62853215);
 
     // --- other setups
     setupSoundManager();
