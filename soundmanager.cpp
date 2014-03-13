@@ -38,9 +38,7 @@ void SoundManager::playUrl(const QUrl &url) {
 
 // --- public slots
 void SoundManager::play() {
-    // stub - to be removed
-    if (player->state() == QMediaPlayer::StoppedState) playSound(98800029); // 2,147,483,647
-    else player->play();
+    player->play();
 }
 
 void SoundManager::pause() {
@@ -87,8 +85,8 @@ void SoundManager::enqueueSound(int id) {
 // --- private slots
 void SoundManager::handlePlayerStateChange(QMediaPlayer::State state) {
     switch(state) {
-        case QMediaPlayer::StoppedState: emit finished();
-        case QMediaPlayer::PlayingState: emit started();
+        case QMediaPlayer::StoppedState: emit finished(); break;
+        case QMediaPlayer::PlayingState: emit started(); break;
     }
 }
 
