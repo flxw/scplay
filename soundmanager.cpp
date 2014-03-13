@@ -86,7 +86,7 @@ void SoundManager::enqueueSound(int id) {
 void SoundManager::handlePlayerStateChange(QMediaPlayer::State state) {
     switch(state) {
         case QMediaPlayer::StoppedState: emit finished(); break;
-        case QMediaPlayer::PausedState: emit paused(); break;
+        case QMediaPlayer::PausedState:  emit paused(); break;
         case QMediaPlayer::PlayingState: emit started(); break;
     }
 }

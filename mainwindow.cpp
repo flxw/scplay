@@ -18,8 +18,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupSoundManager();
     setupTrayIcon();
     setupSoundListViews();
-
-    // --- connections
 }
 
 MainWindow::~MainWindow()
@@ -63,8 +61,8 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
 void MainWindow::handlePlayRequest(QModelIndex index) {
     ui->playPauseButton->setEnabled(true);
 
-    const SoundListModel* currentModel = (SoundListModel*)ui->songView->model();
-    const SoundListItem&  soundItem = currentModel->getSongItem(index);
+    const SoundListModel* currentModel = (SoundListModel*)index.model();
+    const SoundListItem&  soundItem    = currentModel->getSongItem(index);
 
     soundManager->playSound(soundItem.getId());
     currentSongIndex = index;
@@ -72,6 +70,16 @@ void MainWindow::handlePlayRequest(QModelIndex index) {
 
 void MainWindow::handleSliderUserMove() {
     soundManager->requestNewPosition(ui->progressBar->sliderPosition());
+}
+
+void MainWindow::handleSongFinish() {
+    QModelIndex nextSongIndex = currentSongIndex.model()->index(currentSongIndex.row()+1,currentSongIndex.column());
+
+    if (nextSongIndex.isValid()) {
+        handlePlayRequest(nextSongIndex);
+    } else {
+        setPlayButtonIcon();
+    }
 }
 
 void MainWindow::setPlayButtonIcon() {
@@ -110,11 +118,11 @@ void MainWindow::setupSoundManager() {
 
     connect(soundManager, SIGNAL(started()),  this, SLOT(setPauseButtonIcon()));
     connect(soundManager, SIGNAL(paused()),   this, SLOT(setPlayButtonIcon()));
-    connect(soundManager, SIGNAL(finished()), this, SLOT(setPlayButtonIcon()));
+    connect(soundManager, SIGNAL(finished()), this, SLOT(handleSongFinish()));
 
-    connect(soundManager, SIGNAL(newSongDuration(int, int)), ui->progressBar, SLOT(setRange(int,int)));
-    connect(soundManager, SIGNAL(playTimeElapsed(int)), ui->progressBar, SLOT(setValue(int)));
-    connect(ui->progressBar, SIGNAL(sliderReleased()), this, SLOT(handleSliderUserMove()));
+    connect(soundManager,    SIGNAL(newSongDuration(int, int)), ui->progressBar, SLOT(setRange(int,int)));
+    connect(soundManager,    SIGNAL(playTimeElapsed(int)),      ui->progressBar, SLOT(setValue(int)));
+    connect(ui->progressBar, SIGNAL(sliderReleased()),          this,            SLOT(handleSliderUserMove()));
 
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
