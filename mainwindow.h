@@ -3,6 +3,7 @@
 
 # include <QMainWindow>
 # include <QSystemTrayIcon>
+# include <QModelIndex>
 
 # include "soundmanager.h"
 # include "soundlistmodel.h"
@@ -42,6 +43,8 @@ private:
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;
+
+    QModelIndex currentSongIndex;
 };
 
 #endif // MAINWINDOW_H

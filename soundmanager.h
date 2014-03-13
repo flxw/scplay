@@ -25,13 +25,10 @@ public slots:
     void next();
     void previous();
 
+    void requestNewPosition(int p);
+
     void playSound(int id);
     void enqueueSound(int id);
-
-    void handlePlayerStateChange(QMediaPlayer::State state);
-    void receiveStreamUrl(int id, QUrl url);
-    void handleNewDuration(qint64 d);
-    void handleNewPosition(qint64 p);
 
 signals:
     void finished(); // emitted when the last song has finished playing
@@ -40,6 +37,11 @@ signals:
     void playTimeElapsed(int duration);
     void newSongDuration(int begin, int duration);
 
+private slots:
+    void handlePlayerStateChange(QMediaPlayer::State state);
+    void receiveStreamUrl(int id, QUrl url);
+    void handleNewDuration(qint64 d);
+    void handleNewPosition(qint64 p);
 
     // --- attributes ---
 public:

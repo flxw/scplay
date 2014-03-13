@@ -9,6 +9,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->playPauseButton->setDisabled(true);
+    ui->prevButton->setDisabled(true);
+    ui->nextButton->setDisabled(true);
+
     this->hide();
 
     // --- other setups
@@ -59,11 +64,12 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
 }
 
 void MainWindow::handlePlayRequest(QModelIndex index) {
+    ui->playPauseButton->setEnabled(true);
     const SoundListModel* currentModel = (SoundListModel*)ui->songView->model();
     const SoundListItem&  soundItem = currentModel->getSongItem(index);
 
     soundManager->playSound(soundItem.getId());
-    // hier playlist vom manager befüllen
+    currentSongIndex = index;
 }
 
 void MainWindow::togglePlayPauseButtonIcon() {
@@ -110,8 +116,10 @@ void MainWindow::setupSoundManager() {
 
     connect(soundManager, SIGNAL(started()),  this, SLOT(togglePlayPauseButtonIcon()));
     connect(soundManager, SIGNAL(finished()), this, SLOT(togglePlayPauseButtonIcon()));
+
     connect(soundManager, SIGNAL(newSongDuration(int, int)), ui->progressBar, SLOT(setRange(int,int)));
     connect(soundManager, SIGNAL(playTimeElapsed(int)), ui->progressBar, SLOT(setValue(int)));
+    connect(ui->progressBar, SIGNAL(sliderMoved(int)), soundManager, SLOT(requestNewPosition(int)));
 
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));

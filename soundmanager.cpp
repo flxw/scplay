@@ -59,6 +59,13 @@ void SoundManager::previous() {
     // TODO
 }
 
+void SoundManager::requestNewPosition(int p) {
+    if (player->isSeekable())
+        player->setPosition((qint64) p);
+    else
+        qDebug("not seekable :(");
+}
+
 void SoundManager::playSound(int id) {
     lastRequestedSong = id;
 
@@ -76,6 +83,8 @@ void SoundManager::playSound(int id) {
 void SoundManager::enqueueSound(int id) {
 }
 
+
+// --- private slots
 void SoundManager::handlePlayerStateChange(QMediaPlayer::State state) {
     switch(state) {
         case QMediaPlayer::StoppedState: emit finished();
@@ -89,9 +98,9 @@ void SoundManager::receiveStreamUrl(int id, QUrl url) {
 }
 
 void SoundManager::handleNewDuration(qint64 d) {
-    emit newSongDuration(0, (int) d/1000);
+    emit newSongDuration(0, (int) d);
 }
 
 void SoundManager::handleNewPosition(qint64 p) {
-    emit playTimeElapsed((int) p/1000);
+    emit playTimeElapsed((int) p);
 }
