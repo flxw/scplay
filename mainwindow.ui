@@ -120,6 +120,9 @@
       <height>16</height>
      </rect>
     </property>
+    <property name="tracking">
+     <bool>false</bool>
+    </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
     </property>

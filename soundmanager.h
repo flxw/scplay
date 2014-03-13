@@ -32,6 +32,7 @@ public slots:
 
 signals:
     void finished(); // emitted when the last song has finished playing
+    void paused();
     void started();
     void nextSongStarted(); // emitted when the next song is begun
     void playTimeElapsed(int duration);

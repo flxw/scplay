@@ -22,7 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setupSoundListViews();
 
     // --- connections
-    connect(ui->playPauseButton, SIGNAL(clicked()), this, SLOT(togglePlayPauseButtonIcon()), Qt::QueuedConnection);
 }
 
 MainWindow::~MainWindow()
@@ -65,6 +64,7 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
 
 void MainWindow::handlePlayRequest(QModelIndex index) {
     ui->playPauseButton->setEnabled(true);
+
     const SoundListModel* currentModel = (SoundListModel*)ui->songView->model();
     const SoundListItem&  soundItem = currentModel->getSongItem(index);
 
@@ -72,12 +72,8 @@ void MainWindow::handlePlayRequest(QModelIndex index) {
     currentSongIndex = index;
 }
 
-void MainWindow::togglePlayPauseButtonIcon() {
-    if (soundManager->isPlaying()) {
-        setPauseButtonIcon();
-    } else {
-        setPlayButtonIcon();
-    }
+void MainWindow::handleSliderUserMove() {
+    soundManager->requestNewPosition(ui->progressBar->sliderPosition());
 }
 
 void MainWindow::setPlayButtonIcon() {
@@ -114,14 +110,15 @@ void MainWindow::setupTrayIcon() {
 void MainWindow::setupSoundManager() {
     soundManager = new SoundManager(this);
 
-    connect(soundManager, SIGNAL(started()),  this, SLOT(togglePlayPauseButtonIcon()));
-    connect(soundManager, SIGNAL(finished()), this, SLOT(togglePlayPauseButtonIcon()));
+    connect(soundManager, SIGNAL(started()),  this, SLOT(setPauseButtonIcon()));
+    connect(soundManager, SIGNAL(paused()),   this, SLOT(setPlayButtonIcon()));
+    connect(soundManager, SIGNAL(finished()), this, SLOT(setPlayButtonIcon()));
 
     connect(soundManager, SIGNAL(newSongDuration(int, int)), ui->progressBar, SLOT(setRange(int,int)));
     connect(soundManager, SIGNAL(playTimeElapsed(int)), ui->progressBar, SLOT(setValue(int)));
-    connect(ui->progressBar, SIGNAL(sliderMoved(int)), soundManager, SLOT(requestNewPosition(int)));
+    connect(ui->progressBar, SIGNAL(sliderReleased()), this, SLOT(handleSliderUserMove()));
 
-    connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
+    connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
     connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
     connect(ui->prevButton,      SIGNAL(clicked()), soundManager, SLOT(previous()));
 }
