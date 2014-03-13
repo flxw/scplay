@@ -5,9 +5,7 @@
 
 # include <likelistmodel.h>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
-{
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow){
     ui->setupUi(this);
 
     ui->playPauseButton->setDisabled(true);
