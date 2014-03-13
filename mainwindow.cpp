@@ -18,6 +18,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupSoundManager();
     setupTrayIcon();
     setupSoundListViews();
+
+    // -- connections
+    connect(ui->prevButton, SIGNAL(clicked()), this, SLOT(playPreviousSong()));
+    connect(ui->nextButton, SIGNAL(clicked()), this, SLOT(playNextSong()));
 }
 
 MainWindow::~MainWindow()
@@ -67,6 +71,10 @@ void MainWindow::handlePlayRequest(QModelIndex index) {
     const SoundListModel* currentModel = (SoundListModel*)index.model();
     const SoundListItem&  soundItem    = currentModel->getSongItem(index);
 
+    // should prev/next buttons be enabled?
+    ui->prevButton->setEnabled(index.row() > 0);
+    ui->nextButton->setEnabled(index.row() < (currentModel->rowCount() - 1));
+
     soundManager->playSound(soundItem.getId());
     currentSongIndex = index;
 }
@@ -75,12 +83,24 @@ void MainWindow::handleSliderUserMove() {
     soundManager->requestNewPosition(ui->progressBar->sliderPosition());
 }
 
-void MainWindow::handleSongFinish() {
+void MainWindow::playNextSong() {
     QModelIndex nextSongIndex = currentSongIndex.model()->index(currentSongIndex.row()+1,currentSongIndex.column());
 
     if (nextSongIndex.isValid()) {
         handlePlayRequest(nextSongIndex);
     } else {
+        ui->nextButton->setEnabled(false);
+        setPlayButtonIcon();
+    }
+}
+
+void MainWindow::playPreviousSong() {
+    QModelIndex prevSongIndex = currentSongIndex.model()->index(currentSongIndex.row()-1,currentSongIndex.column());
+
+    if (prevSongIndex.isValid()) {
+        handlePlayRequest(prevSongIndex);
+    } else {
+        ui->prevButton->setEnabled(false);
         setPlayButtonIcon();
     }
 }
@@ -121,15 +141,14 @@ void MainWindow::setupSoundManager() {
 
     connect(soundManager, SIGNAL(started()),  this, SLOT(setPauseButtonIcon()));
     connect(soundManager, SIGNAL(paused()),   this, SLOT(setPlayButtonIcon()));
-    connect(soundManager, SIGNAL(finished()), this, SLOT(handleSongFinish()));
+    connect(soundManager, SIGNAL(finished()), this, SLOT(playNextSong()));
 
     connect(soundManager,    SIGNAL(newSongDuration(int, int)), ui->progressBar, SLOT(setRange(int,int)));
     connect(soundManager,    SIGNAL(playTimeElapsed(int)),      ui->progressBar, SLOT(setValue(int)));
     connect(ui->progressBar, SIGNAL(sliderReleased()),          this,            SLOT(handleSliderUserMove()));
 
+    // this is being connected to the pause slot, as the button is only enabled upon play beging
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
-    connect(ui->nextButton,      SIGNAL(clicked()), soundManager, SLOT(next()));
-    connect(ui->prevButton,      SIGNAL(clicked()), soundManager, SLOT(previous()));
 }
 
 void MainWindow::handleTrayIconSingleClick() {

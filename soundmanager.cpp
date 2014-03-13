@@ -31,8 +31,13 @@ bool SoundManager::isUrlStillValid(const QUrl &url) {
 }
 
 void SoundManager::playUrl(const QUrl &url) {
+    disconnect(player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(handlePlayerStateChange(QMediaPlayer::State)));
+
     player->stop();
     player->setMedia(url);
+
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(handlePlayerStateChange(QMediaPlayer::State)));
+
     player->play();
 }
 
@@ -67,11 +72,14 @@ void SoundManager::requestNewPosition(int p) {
 void SoundManager::playSound(int id) {
     lastRequestedSong = id;
 
+    // make url validity check here
     if (idsForUrls.contains(id)) {
         QUrl url = idsForUrls.value(id);
         if (isUrlStillValid(url)) {
             playUrl(url);
             return;
+        } else {
+            idsForUrls.remove(id);
         }
     }
 
