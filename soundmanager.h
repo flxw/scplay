@@ -38,7 +38,7 @@ signals:
     void started();
     void nextSongStarted(); // emitted when the next song is begun
     void playTimeElapsed(int duration);
-    void newSongDuration(int duration);
+    void newSongDuration(int begin, int duration);
 
 
     // --- attributes ---

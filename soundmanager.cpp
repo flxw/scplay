@@ -89,7 +89,7 @@ void SoundManager::receiveStreamUrl(int id, QUrl url) {
 }
 
 void SoundManager::handleNewDuration(qint64 d) {
-    emit newSongDuration((int) d/1000);
+    emit newSongDuration(0, (int) d/1000);
 }
 
 void SoundManager::handleNewPosition(qint64 p) {

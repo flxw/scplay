@@ -63,10 +63,7 @@ void MainWindow::handlePlayRequest(QModelIndex index) {
     const SoundListItem&  soundItem = currentModel->getSongItem(index);
 
     soundManager->playSound(soundItem.getId());
-}
-
-void MainWindow::handleNewSongDuration(int d) {
-    ui->progressBar->setRange(0, d);
+    // hier playlist vom manager befüllen
 }
 
 void MainWindow::togglePlayPauseButtonIcon() {
@@ -111,9 +108,9 @@ void MainWindow::setupTrayIcon() {
 void MainWindow::setupSoundManager() {
     soundManager = new SoundManager(this);
 
-    connect(soundManager, SIGNAL(started()),  this, SLOT(setPauseButtonIcon()));
-    connect(soundManager, SIGNAL(finished()), this, SLOT(setPlayButtonIcon()));
-    connect(soundManager, SIGNAL(newSongDuration(int)), this, SLOT(handleNewSongDuration(int)));
+    connect(soundManager, SIGNAL(started()),  this, SLOT(togglePlayPauseButtonIcon()));
+    connect(soundManager, SIGNAL(finished()), this, SLOT(togglePlayPauseButtonIcon()));
+    connect(soundManager, SIGNAL(newSongDuration(int, int)), ui->progressBar, SLOT(setRange(int,int)));
     connect(soundManager, SIGNAL(playTimeElapsed(int)), ui->progressBar, SLOT(setValue(int)));
 
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
