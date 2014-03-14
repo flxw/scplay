@@ -87,6 +87,10 @@ void MainWindow::handlePlayRequest(QModelIndex index) {
     ui->nextButton->setEnabled(index.row() < (currentModel->rowCount() - 1));
 
     soundManager->playSound(soundItem.getId());
+
+    ui->soundNameLabel->setText(soundItem.getTitle());
+    ui->creatorNameLabel->setText(soundItem.getUser());
+
     currentSongIndex = index;
 }
 

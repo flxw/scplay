@@ -15,7 +15,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">#centralWidget {
-	background-color: #333;
+	background-color: rgb(237,241,244);
 	color: #fff;
 }
 
@@ -47,22 +47,20 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>10</y>
-      <width>75</width>
-      <height>75</height>
+      <x>175</x>
+      <y>60</y>
+      <width>50</width>
+      <height>50</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>20</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
-	border-radius:37px;
+	border-radius: 25px;
 }</string>
     </property>
     <property name="text">
@@ -75,8 +73,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>30</y>
+      <x>120</x>
+      <y>65</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -96,8 +94,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>30</y>
+      <x>240</x>
+      <y>65</y>
       <width>40</width>
       <height>40</height>
      </rect>
@@ -115,9 +113,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>140</y>
       <width>281</width>
-      <height>271</height>
+      <height>251</height>
      </rect>
     </property>
     <property name="horizontalScrollBarPolicy">
@@ -128,10 +126,28 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>110</y>
       <width>281</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"> QSlider::groove:horizontal {
+     border: 1px solid #999999;
+     height: 8px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+     margin: 2px 0;
+ }
+
+ QSlider::handle:horizontal {
+     background: rgba(255,72,0,.8);
+     border: 1px solid #5c5c5c;
+     width: 18px;
+     margin: -2px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+     border-radius: 3px;
+ }</string>
+    </property>
+    <property name="value">
+     <number>20</number>
     </property>
     <property name="tracking">
      <bool>false</bool>
@@ -140,9 +156,74 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
+   <widget class="QLabel" name="artworkLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>100</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/icons/artwork.jpg</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="soundNameLabel">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>10</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>soundNameLabel</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="creatorNameLabel">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>45</y>
+      <width>161</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>creatorNameLabel</string>
+    </property>
+   </widget>
+   <zorder>playPauseButton</zorder>
+   <zorder>prevButton</zorder>
+   <zorder>nextButton</zorder>
+   <zorder>songView</zorder>
+   <zorder>artworkLabel</zorder>
+   <zorder>progressBar</zorder>
+   <zorder>soundNameLabel</zorder>
+   <zorder>creatorNameLabel</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
