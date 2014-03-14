@@ -18,7 +18,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupSoundManager();
     setupTrayIcon();
     setupSoundListViews();
+
+#ifndef QT_DEBUG
     setupWelcomeScreen();
+#endif
 
     // -- connections
     connect(ui->prevButton, SIGNAL(clicked()), this, SLOT(playPreviousSong()));
@@ -26,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
     connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), likeListModel, SLOT(fillModel()));
     //connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), playListModel, SLOT(fillModel()));
+
+#ifdef QT_DEBUG
+    SoundCloudApi::getInstance().setUserId(62853215);
+#endif
 }
 
 MainWindow::~MainWindow()

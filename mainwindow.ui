@@ -15,27 +15,28 @@
   </property>
   <property name="styleSheet">
    <string notr="true">* {
-	background-color: #fff;
+	background-color: #333;
+	color: #fff;
 }
 
 #playPauseButton,
 #prevButton,
 #nextButton {
 	border-style: solid;
-	border-width:2px;
-	border-color: rgba(255,72,0,.8);
+	border-width:0px;
+	background-color: rgba(255,72,0,.8);
 }
 
 #playPauseButton:hover,
 #prevButton:hover,
 #nextButton:hover {
-	background-color: #fffafa;
+	background-color: rgba(255,72,0,.7);
 }
 
 #playPauseButton:pressed,
 #prevButton:pressed,
 #nextButton:pressed {
-	background-color: #fdf5e6;
+	background-color: rgba(255,72,0,.6);
 }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -54,6 +55,8 @@
     <property name="font">
      <font>
       <pointsize>20</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="styleSheet">
