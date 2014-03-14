@@ -14,7 +14,7 @@
    <string>scplayer</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">* {
+   <string notr="true">#centralWidget {
 	background-color: #333;
 	color: #fff;
 }
@@ -22,6 +22,7 @@
 #playPauseButton,
 #prevButton,
 #nextButton {
+	color: #fff;
 	border-style: solid;
 	border-width:0px;
 	background-color: rgba(255,72,0,.8);
