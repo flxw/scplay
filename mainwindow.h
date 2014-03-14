@@ -3,9 +3,7 @@
 
 # include <QMainWindow>
 # include <QSystemTrayIcon>
-# include <QModelIndex>
 
-# include "soundmanager.h"
 # include "soundlistmodel.h"
 
 namespace Ui {
@@ -24,32 +22,19 @@ public:
 
 public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
-    void handlePlayRequest(QModelIndex index);
-    void handleSliderUserMove();
-
-    void playNextSong();
-    void playPreviousSong();
-
-    void setPlayButtonIcon();
-    void setPauseButtonIcon();
 
 private:
     void setupTrayIcon();
-    void setupSoundManager();
     void setupSoundListViews();
     void setupWelcomeScreen();
-
     void handleTrayIconSingleClick(void);
 
     // --- attributes
 private:
-    SoundManager *soundManager;
     SoundListModel *likeListModel, *playlistModel;
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;
-
-    QModelIndex currentSongIndex;
 };
 
 #endif // MAINWINDOW_H
