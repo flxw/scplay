@@ -39,14 +39,15 @@ private:
 
 private slots:
     void handleFinishedRequest(QNetworkReply *reply);
-    void handleStreamUrlReply(QNetworkReply *reply, int id);
+    void handleStreamUrlReply(QNetworkReply *reply);
     void handleLikeReply(QNetworkReply *reply);
     void handleUserIdReply(QNetworkReply *reply);
 
 // --- attributes
 private:
     QHash<QNetworkReply*, int> waitingStreamUrlReplies;
-    QNetworkReply* waitingUserIdReply;
+    QList<QNetworkReply*>      waitingLikeReplies;
+    QNetworkReply*             waitingUserIdReply;
 
     QNetworkAccessManager* networkManager;
 

@@ -24,7 +24,9 @@ void SoundCloudApi::getStreamUrl(int songId) {
 void SoundCloudApi::getLikes() {
     static QString urlTemplate("http://api.soundcloud.com/users/%1/favorites.json?client_id=" API_KEY);
 
-    networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
+    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
+
+    waitingLikeReplies.append(reply);
 }
 
 /* resolves the soundcloud username to the internal user id */
@@ -54,11 +56,11 @@ SoundCloudApi::SoundCloudApi() {
 void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
         if (waitingStreamUrlReplies.contains(reply)) {
-            handleStreamUrlReply(reply, waitingStreamUrlReplies.take(reply));
-        } else if (reply == waitingUserIdReply) {
-            handleUserIdReply(reply);
-        } else {
+            handleStreamUrlReply(reply);
+        } else if (waitingLikeReplies.contains(reply)) {
             handleLikeReply(reply);
+        } else if (waitingUserIdReply == reply) {
+            handleUserIdReply(reply);
         }
     } else {
         qDebug("Network error %i | %s", (int)reply->error(), reply->url().toString().toStdString().c_str());
@@ -67,20 +69,20 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
             // emit badStreamUrlRequest?!
         } else if (reply == waitingUserIdReply) {
             emit badUserIdGiven();
-        } else {
-            handleLikeReply(reply);
+        } else if (waitingLikeReplies.contains(reply)){
+            // emit badLikeRequest?!
         }
     }
 }
 
-void SoundCloudApi::handleStreamUrlReply(QNetworkReply *reply, int id) {
+void SoundCloudApi::handleStreamUrlReply(QNetworkReply *reply) {
     QString replyString = QString(reply->readAll());
     QJsonDocument jsonDocument = QJsonDocument::fromJson(replyString.toUtf8());
 
     QJsonValue streamUrl = jsonDocument.object()["http_mp3_128_url"];
 
     if (streamUrl.isString()) {
-        emit streamUrlReceived(id, QUrl(streamUrl.toString()));
+        emit streamUrlReceived(waitingStreamUrlReplies.take(reply), QUrl(streamUrl.toString()));
     }
 }
 
@@ -102,6 +104,8 @@ void SoundCloudApi::handleLikeReply(QNetworkReply *reply) {
 
         soundItems.append(listItem);
     }
+
+    waitingLikeReplies.removeOne(reply);
 
     emit likesReceived(soundItems);
 }
