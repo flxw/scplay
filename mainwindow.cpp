@@ -4,7 +4,6 @@
 # include <QMenu>
 # include <QPropertyAnimation>
 
-# include "likelistmodel.h"
 # include "soundcloudapi.h"
 # include "enterusernamewidget.h"
 # include "playerwidget.h"
@@ -17,15 +16,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
     // --- other setups
     setupTrayIcon();
-    setupSoundListViews();
+    setupSoundListView();
 
 #ifndef QT_DEBUG
     setupWelcomeScreen();
 #endif
-
-    // -- connections
-    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), likeListModel, SLOT(fillModel()));
-    //connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), playListModel, SLOT(fillModel()));
 
 #ifdef QT_DEBUG
     SoundCloudApi::getInstance().setUserId(62853215);
@@ -99,10 +94,11 @@ void MainWindow::handleTrayIconSingleClick() {
     this->show();
 }
 
-void MainWindow::setupSoundListViews() {
+void MainWindow::setupSoundListView() {
     likeListModel = new LikeListModel(this);
 
     ui->songView->setModel(likeListModel);
+
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 }
 

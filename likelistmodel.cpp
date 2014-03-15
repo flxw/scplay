@@ -1,21 +1,33 @@
 # include "likelistmodel.h"
 # include "soundcloudapi.h"
+# include "datastore.h"
 
-LikeListModel::LikeListModel(QObject *parent) : SoundListModel(parent)
-{
+LikeListModel::LikeListModel(QObject *parent) : MyListModel(parent) {
+    connect(&DataStore::getInstance(), SIGNAL(likesUpdated(QList<int>)), this, SLOT(updateModel(QList<int>)));
 }
 
-// --- protected functions
-void LikeListModel::fillModel() {
-    SoundCloudApi& scApi = SoundCloudApi::getInstance();
+ListItem LikeListModel::getItem(const QModelIndex &index) const {
+    if (!index.isValid()) return ListItem();
 
-    connect(&scApi, SIGNAL(likesReceived(QList<SoundListItem>)), this, SLOT(updateModel(QList<SoundListItem>)));
+    const ListItem& ret = DataStore::getInstance().getSound(dataIds.at(index.row()));
 
-    scApi.getLikes();
+    return ret;
 }
 
-void LikeListModel::updateModel(QList<SoundListItem> newItems) {
-    this->soundItems = newItems;
+QVariant LikeListModel::data(const QModelIndex &index, int role) const {
+    if (!index.isValid()) {
+        return QVariant();
+    }
 
-    emit dataChanged(QModelIndex(), QModelIndex());
+    if (index.row() >= dataIds.size()) {
+        return QVariant();
+    }
+
+    if (role == Qt::DisplayRole) {
+        const ListItem& sound = getItem(index);
+        QString t = sound.getTitle();
+        return t;
+    } else {
+        return QVariant();
+    }
 }

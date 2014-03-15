@@ -1,8 +1,8 @@
 # include "playerwidget.h"
 # include "ui_playerwidget.h"
 
-# include "soundlistmodel.h"
-# include "soundlistitem.h"
+# include "likelistmodel.h"
+# include "sounditem.h"
 
 PlayerWidget::PlayerWidget(QWidget *parent) :
     QWidget(parent),
@@ -25,17 +25,19 @@ PlayerWidget::~PlayerWidget()
 
 // -- public slots
 void PlayerWidget::handlePlayRequest(QModelIndex index) {
-    const SoundListModel* currentModel = (SoundListModel*)index.model();
-    const SoundListItem&  soundItem    = currentModel->getSongItem(index);
+    const MyListModel* currentModel = (MyListModel*)index.model();
+    const ListItem     song         = currentModel->getItem(index);
 
     // should prev/next buttons be enabled?
     ui->prevButton->setEnabled(index.row() > 0);
     ui->nextButton->setEnabled(index.row() < (currentModel->rowCount() - 1));
 
-    soundManager->playSound(soundItem.getId());
+    soundManager->playSound(song.getId());
 
-    ui->soundNameLabel->setText(soundItem.getTitle());
-    ui->creatorNameLabel->setText(soundItem.getUser());
+    ui->soundNameLabel->setText(song.getTitle());
+    ui->creatorNameLabel->setText(song.getUser());
+
+    // handle artwork display here
 
     currentSongIndex = index;
 }

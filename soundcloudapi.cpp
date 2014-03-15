@@ -4,6 +4,8 @@
 # include <QJsonArray>
 # include <QJsonObject>
 
+# include "datastore.h"
+
 # define API_KEY "798808c14d25fc803a4f484e821ca63a"
 
 // --- public methods
@@ -29,6 +31,12 @@ void SoundCloudApi::getLikes() {
     waitingLikeReplies.append(reply);
 }
 
+void SoundCloudApi::getArtwork(int songId, QUrl artworkUrl) {
+    QNetworkReply* reply = networkManager->get(QNetworkRequest(artworkUrl));
+
+    waitingArtworkReplies.insert(reply, songId);
+}
+
 /* resolves the soundcloud username to the internal user id */
 void SoundCloudApi::setUserPermaLink(QString name) {
     qDebug("user perma link given!");
@@ -49,7 +57,10 @@ SoundCloudApi::SoundCloudApi() {
     waitingUserIdReply = NULL;
 
     networkManager = new QNetworkAccessManager(this);
+
     connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(handleFinishedRequest(QNetworkReply*)));
+    connect(this, SIGNAL(likesReceived(QList<SoundItem>)), &DataStore::getInstance(), SLOT(updateLikes(QList<SoundItem>)));
+    connect(this, SIGNAL(isReady()), &DataStore::getInstance(), SLOT(initiallyFillStore()));
 }
 
 // --- private slots
@@ -61,15 +72,20 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
             handleLikeReply(reply);
         } else if (waitingUserIdReply == reply) {
             handleUserIdReply(reply);
+        } else if (waitingArtworkReplies.contains(reply)) {
+            handleArtworkReply(reply);
         }
     } else {
         qDebug("Network error %i | %s", (int)reply->error(), reply->url().toString().toStdString().c_str());
 
         if (waitingStreamUrlReplies.contains(reply)) {
+            waitingStreamUrlReplies.remove(reply);
             // emit badStreamUrlRequest?!
         } else if (reply == waitingUserIdReply) {
+            waitingUserIdReply = NULL;
             emit badUserIdGiven();
         } else if (waitingLikeReplies.contains(reply)){
+            waitingLikeReplies.removeOne(reply);
             // emit badLikeRequest?!
         }
     }
@@ -92,22 +108,24 @@ void SoundCloudApi::handleLikeReply(QNetworkReply *reply) {
     QJsonArray  jsonArray = jsonDocument.array();
     QJsonObject songObject;
 
-    QList<SoundListItem> soundItems;
+    QList<SoundItem> likes;
 
     for (QJsonArray::const_iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
-        SoundListItem listItem;
-
         songObject = (*it).toObject();
-        listItem.setId(songObject["id"].toInt());
-        listItem.setTitle(songObject["title"].toString());
-        listItem.setUser(songObject["user"].toObject()["username"].toString());
 
-        soundItems.append(listItem);
+        SoundItem like;
+
+        like.setId(songObject["id"].toInt());
+        like.setTitle(songObject["title"].toString());
+        like.setUser(songObject["user"].toObject()["username"].toString());
+        like.setArtworkUrl(songObject["artwork_url"].toString());
+
+        likes.append(like);
     }
 
     waitingLikeReplies.removeOne(reply);
 
-    emit likesReceived(soundItems);
+    emit likesReceived(likes);
 }
 
 void SoundCloudApi::handleUserIdReply(QNetworkReply* reply) {
@@ -120,5 +138,15 @@ void SoundCloudApi::handleUserIdReply(QNetworkReply* reply) {
     if (ok && id > 0) {
         userId = id;
         emit isReady();
+    }
+}
+
+void SoundCloudApi::handleArtworkReply(QNetworkReply *reply) {
+    QPixmap p;
+    QByteArray picBytes = reply->readAll();
+    int id = waitingArtworkReplies.take(reply);
+
+    if (p.loadFromData(picBytes, "JPG")) {
+        emit artworkReceived(id, p);
     }
 }

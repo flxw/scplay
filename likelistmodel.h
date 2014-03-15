@@ -1,18 +1,16 @@
 #ifndef LIKELISTMODEL_H
 #define LIKELISTMODEL_H
 
-# include "soundlistmodel.h"
-# include "soundlistitem.h"
+# include "mylistmodel.h"
+# include "sounditem.h"
 
-class LikeListModel : public SoundListModel
+class LikeListModel : public MyListModel
 {
 public:
-    LikeListModel(QObject *parent);
+    explicit LikeListModel(QObject *parent);
 
-protected slots:
-    void fillModel();
-    void updateModel(QList<SoundListItem> newItems);
-
+    ListItem getItem(const QModelIndex &index) const;
+    QVariant data(const QModelIndex &index, int role) const;
 };
 
 #endif // LIKELISTMODEL_H

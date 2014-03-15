@@ -8,7 +8,7 @@
 # include <QNetworkReply>
 # include <QHash>
 
-# include "soundlistitem.h"
+# include "sounditem.h"
 
 class SoundCloudApi : public QObject
 {
@@ -19,6 +19,7 @@ public:
 
     void getStreamUrl(int songId);
     void getLikes();
+    void getArtwork(int songId, QUrl artworkUrl);
 
 public slots:
     void setUserPermaLink(QString name);
@@ -26,7 +27,8 @@ public slots:
 
 signals:
     void streamUrlReceived(int songId, QUrl streamUrl);
-    void likesReceived(QList<SoundListItem> likes);
+    void likesReceived(QList<SoundItem> likes);
+    void artworkReceived(int songId, QPixmap& artwork);
     void isReady(); // emitted when a valid profile id has been set
     void badUserIdGiven();
 
@@ -42,10 +44,12 @@ private slots:
     void handleStreamUrlReply(QNetworkReply *reply);
     void handleLikeReply(QNetworkReply *reply);
     void handleUserIdReply(QNetworkReply *reply);
+    void handleArtworkReply(QNetworkReply *reply);
 
 // --- attributes
 private:
     QHash<QNetworkReply*, int> waitingStreamUrlReplies;
+    QHash<QNetworkReply*, int> waitingArtworkReplies;
     QList<QNetworkReply*>      waitingLikeReplies;
     QNetworkReply*             waitingUserIdReply;
 

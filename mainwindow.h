@@ -4,7 +4,7 @@
 # include <QMainWindow>
 # include <QSystemTrayIcon>
 
-# include "soundlistmodel.h"
+# include "likelistmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,15 +23,16 @@ public:
 public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
 
+    // --- private section ----------------------
 private:
     void setupTrayIcon();
-    void setupSoundListViews();
+    void setupSoundListView();
     void setupWelcomeScreen();
     void handleTrayIconSingleClick(void);
 
     // --- attributes
 private:
-    SoundListModel *likeListModel, *playlistModel;
+    LikeListModel *likeListModel;
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;
