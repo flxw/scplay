@@ -23,6 +23,7 @@ public slots:
     void togglePlayPause();
     void playNextSong();
     void playPreviousSong();
+    void handleArtworkUpdate(int id, QPixmap& p);
 
 // === private parts
 private: // - methods
@@ -40,6 +41,7 @@ private: // - attributes
     Ui::PlayerWidget *ui;
 
     QModelIndex currentSongIndex;
+    int         currentSongId;
 };
 
 #endif // PLAYERWIDGET_H

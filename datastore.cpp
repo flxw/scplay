@@ -32,6 +32,10 @@ void DataStore::updateLikes(QList<SoundItem> newLikes) {
     emit likesUpdated(likeIds);
 }
 
+void DataStore::updateArtwork(int id, QPixmap artwork) {
+    songs[id].setArtwork(artwork);
+}
+
 // --- private methods
 DataStore::DataStore() {
 }

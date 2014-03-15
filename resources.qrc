@@ -2,6 +2,6 @@
     <qresource prefix="/icons">
         <file>white.png</file>
         <file>white_192x116.png</file>
-        <file>artwork.jpg</file>
+        <file>placeholder.png</file>
     </qresource>
 </RCC>

@@ -125,7 +125,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="resources.qrc">:/icons/artwork.jpg</pixmap>
+    <pixmap resource="resources.qrc">:/icons/placeholder.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

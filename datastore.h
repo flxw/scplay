@@ -24,6 +24,7 @@ public slots:
     void initiallyFillStore();
 
     void updateLikes(QList<SoundItem> newLikes);
+    void updateArtwork(int id, QPixmap artwork);
     //void updatePlaylists(QList<PlaylistItem> newPlaylists, QList<SoundItem> containedSongs);
 
 // === privates ==========================

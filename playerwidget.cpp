@@ -3,6 +3,7 @@
 
 # include "likelistmodel.h"
 # include "sounditem.h"
+# include "soundcloudapi.h"
 
 PlayerWidget::PlayerWidget(QWidget *parent) :
     QWidget(parent),
@@ -16,6 +17,8 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
     // connections
     connect(ui->prevButton, SIGNAL(clicked()), this, SLOT(playPreviousSong()));
     connect(ui->nextButton, SIGNAL(clicked()), this, SLOT(playNextSong()));
+
+    connect(&SoundCloudApi::getInstance(), SIGNAL(artworkReceived(int,QPixmap&)), this, SLOT(handleArtworkUpdate(int,QPixmap&)));
 }
 
 PlayerWidget::~PlayerWidget()
@@ -37,9 +40,14 @@ void PlayerWidget::handlePlayRequest(QModelIndex index) {
     ui->soundNameLabel->setText(song.getTitle());
     ui->creatorNameLabel->setText(song.getUser());
 
-    // handle artwork display here
+    if (song.hasArtwork()) {
+        ui->artworkLabel->setPixmap(song.getArtwork());
+    } else {
+        SoundCloudApi::getInstance().getArtwork(song.getId(), song.getArtworkUrl());
+    }
 
     currentSongIndex = index;
+    currentSongId    = song.getId();
 }
 
 void PlayerWidget::togglePlayPause() {
@@ -67,6 +75,7 @@ void PlayerWidget::playPreviousSong() {
         setPlayButtonIcon();
     }
 }
+
 // -- private slots
 void PlayerWidget::handleSliderUserMove() {
     soundManager->requestNewPosition(ui->progressBar->sliderPosition());
@@ -84,6 +93,12 @@ void PlayerWidget::setPauseButtonIcon() {
 
     disconnect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(play()));
     connect(ui->playPauseButton,    SIGNAL(clicked()), soundManager, SLOT(pause()));
+}
+
+void PlayerWidget::handleArtworkUpdate(int id, QPixmap &p) {
+    if (currentSongId == id) {
+        ui->artworkLabel->setPixmap(p);
+    }
 }
 
 // -- private methods
