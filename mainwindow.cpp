@@ -3,6 +3,7 @@
 
 # include <QMenu>
 # include <QPropertyAnimation>
+# include <QParallelAnimationGroup>
 
 # include "soundcloudapi.h"
 # include "enterusernamewidget.h"
@@ -68,6 +69,10 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
     }
 }
 
+void MainWindow::handleAnimationEnd() {
+    ui->footerLabel->setPixmap(QPixmap(":/icons/grey_130x20.png"));
+}
+
 // --- private functions
 void MainWindow::setupTrayIcon() {
     trayIcon = new QSystemTrayIcon(QIcon(":/icons/white.png"), this);
@@ -99,7 +104,24 @@ void MainWindow::setupSoundListView() {
 
     ui->songView->setModel(likeListModel);
 
+    QParallelAnimationGroup *animationGroup = new QParallelAnimationGroup(this);
+    QPropertyAnimation *slideInAnimation = new QPropertyAnimation(ui->playerWidget, "geometry", animationGroup);
+    slideInAnimation->setDuration(500);
+    slideInAnimation->setStartValue(QRect(QPoint(0, -140), ui->playerWidget->size()));
+    slideInAnimation->setEndValue(QRect(QPoint(0,0), ui->playerWidget->size()));
+
+    QPropertyAnimation *shrinkAnimation = new QPropertyAnimation(ui->songView, "geometry", animationGroup);
+    shrinkAnimation->setDuration(500);
+    shrinkAnimation->setStartValue(ui->songView->geometry());
+    shrinkAnimation->setEndValue(QRect(QPoint(10,140), ui->songView->size() - QSize(0,130)));
+
+    animationGroup->addAnimation(slideInAnimation);
+    animationGroup->addAnimation(shrinkAnimation);
+
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), animationGroup, SLOT(start()));
+    connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
+    connect(animationGroup, SIGNAL(finished()), this, SLOT(handleAnimationEnd()));
 }
 
 void MainWindow::setupWelcomeScreen() {
@@ -116,4 +138,7 @@ void MainWindow::setupWelcomeScreen() {
     helloUserFrame->setStyleSheet("background-color: #333;");
 
     connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), slideOutAnimation, SLOT(start()));
+
+    connect(slideOutAnimation, SIGNAL(finished()), slideOutAnimation, SLOT(deleteLater()));
+    connect(slideOutAnimation, SIGNAL(finished()), helloUserFrame, SLOT(deleteLater()));
 }

@@ -39,7 +39,6 @@ void SoundCloudApi::getArtwork(int songId, QUrl artworkUrl) {
 
 /* resolves the soundcloud username to the internal user id */
 void SoundCloudApi::setUserPermaLink(QString name) {
-    qDebug("user perma link given!");
     static QString urlTemplate("http://api.soundcloud.com/resolve.json?url=http://soundcloud.com/%1&client_id=" API_KEY);
 
     waitingUserIdReply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(name))));

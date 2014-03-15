@@ -22,13 +22,14 @@ public:
 
 public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
+    void handleAnimationEnd();
 
     // --- private section ----------------------
 private:
     void setupTrayIcon();
     void setupSoundListView();
     void setupWelcomeScreen();
-    void handleTrayIconSingleClick(void);
+    void handleTrayIconSingleClick();
 
     // --- attributes
 private:
