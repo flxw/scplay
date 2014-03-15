@@ -5,9 +5,7 @@
 # include "sounditem.h"
 # include "soundcloudapi.h"
 
-PlayerWidget::PlayerWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::PlayerWidget)
+PlayerWidget::PlayerWidget(QWidget *parent) : QWidget(parent), ui(new Ui::PlayerWidget)
 {
     ui->setupUi(this);
 
@@ -23,6 +21,9 @@ PlayerWidget::PlayerWidget(QWidget *parent) :
 
 PlayerWidget::~PlayerWidget()
 {
+    soundManager->pause();
+
+    delete soundManager;
     delete ui;
 }
 
