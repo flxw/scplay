@@ -10,6 +10,7 @@
 # include "soundcloudapi.h"
 # include "enterusernamewidget.h"
 # include "playerwidget.h"
+# include "introwidget.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
 {
@@ -37,10 +38,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 }
 
 MainWindow::~MainWindow() {
+#ifdef QT_DEBUG
     int uid = SoundCloudApi::getInstance().getUserId();
 
     QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
     settings.setValue("userId", uid);
+#endif
 
     delete ui;
 }
@@ -129,24 +132,32 @@ void MainWindow::setupSoundListView() {
 }
 
 void MainWindow::setupWelcomeScreen() {
-#ifndef QT_DEBUG
+
     QFrame*  helloUserFrame  = new QFrame(this);
     QWidget* helloUserScreen = new EnterUserNameWidget(helloUserFrame);
+    IntroWidget* introScreen = new IntroWidget(helloUserFrame);
 
-    QPropertyAnimation *slideOutAnimation = new QPropertyAnimation(helloUserFrame, "geometry");
+    introScreen->setGeometry(300,0,300,400);
 
-    slideOutAnimation->setDuration(500);
-    slideOutAnimation->setStartValue(QRect(0,0, 300, 400));
-    slideOutAnimation->setEndValue(QRect(-300, 0, 300, 400));
+    QPropertyAnimation *slideOutAnimation1 = new QPropertyAnimation(helloUserFrame, "geometry");
+    QPropertyAnimation *slideOutAnimation2 = new QPropertyAnimation(helloUserFrame, "geometry");
 
-    helloUserFrame->setMinimumSize(this->size());
+    slideOutAnimation1->setDuration(500);
+    slideOutAnimation1->setStartValue(QRect(0,0, 600, 400));
+    slideOutAnimation1->setEndValue(QRect(-300, 0, 600, 400));
+
+    slideOutAnimation2->setDuration(500);
+    slideOutAnimation2->setStartValue(QRect(-300,0, 600, 400));
+    slideOutAnimation2->setEndValue(QRect(-600, 0, 600, 400));
+
+    helloUserFrame->setMinimumSize(QSize(600,400));
     helloUserFrame->setStyleSheet("background-color: #333;");
 
-    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), slideOutAnimation, SLOT(start()));
-
-    connect(slideOutAnimation, SIGNAL(finished()), slideOutAnimation, SLOT(deleteLater()));
-    connect(slideOutAnimation, SIGNAL(finished()), helloUserFrame, SLOT(deleteLater()));
-#endif
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), slideOutAnimation1, SLOT(start()));
+    connect(slideOutAnimation1, SIGNAL(finished()), slideOutAnimation1, SLOT(deleteLater()));
+    connect(slideOutAnimation1, SIGNAL(finished()), introScreen, SLOT(setFocus()));
+    connect(introScreen, SIGNAL(introDone()), slideOutAnimation2, SLOT(start()));
+    connect(slideOutAnimation2, SIGNAL(finished()), helloUserFrame, SLOT(deleteLater()));
 }
 
 void MainWindow::handleTrayIconSingleClick() {
