@@ -6,7 +6,7 @@
 
 # include "datastore.h"
 
-# define API_KEY "798808c14d25fc803a4f484e821ca63a"
+# define API_KEY "38e39454e5b0aff6f77120f1ab09386e"
 
 // --- public methods
 SoundCloudApi& SoundCloudApi::getInstance() {
