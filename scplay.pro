@@ -6,7 +6,7 @@
 
 QT       += network multimedia widgets core gui
 
-TARGET = scplayer
+TARGET = scplay
 TEMPLATE = app
 
 
