@@ -37,6 +37,10 @@ void SoundCloudApi::getArtwork(int songId, QUrl artworkUrl) {
     waitingArtworkReplies.insert(reply, songId);
 }
 
+int SoundCloudApi::getUserId() const {
+    return userId;
+}
+
 /* resolves the soundcloud username to the internal user id */
 void SoundCloudApi::setUserPermaLink(QString name) {
     static QString urlTemplate("http://api.soundcloud.com/resolve.json?url=http://soundcloud.com/%1&client_id=" API_KEY);

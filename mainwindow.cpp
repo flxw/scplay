@@ -4,6 +4,8 @@
 # include <QMenu>
 # include <QPropertyAnimation>
 # include <QParallelAnimationGroup>
+# include <QSettings>
+# include <QStandardPaths>
 
 # include "soundcloudapi.h"
 # include "enterusernamewidget.h"
@@ -20,16 +22,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupSoundListView();
 
 #ifndef QT_DEBUG
-    setupWelcomeScreen();
-#endif
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
 
-#ifdef QT_DEBUG
+    int uid = settings.value("userId", -1).toInt();
+
+    if (uid < 0) {
+        setupWelcomeScreen();
+    } else {
+        SoundCloudApi::getInstance().setUserId(uid);
+    }
+#else
     SoundCloudApi::getInstance().setUserId(62853215);
 #endif
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
+    int uid = SoundCloudApi::getInstance().getUserId();
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
+    settings.setValue("userId", uid);
+
     delete ui;
 }
 
@@ -91,14 +103,6 @@ void MainWindow::setupTrayIcon() {
             this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
 }
 
-void MainWindow::handleTrayIconSingleClick() {
-    QPoint cursorPosition = QCursor::pos();
-
-    // move() moves the left-upper corner of the window to the specified position
-    this->move(cursorPosition.x() - width(), cursorPosition.y() + 20);
-    this->show();
-}
-
 void MainWindow::setupSoundListView() {
     likeListModel = new LikeListModel(this);
 
@@ -125,6 +129,7 @@ void MainWindow::setupSoundListView() {
 }
 
 void MainWindow::setupWelcomeScreen() {
+#ifndef QT_DEBUG
     QFrame*  helloUserFrame  = new QFrame(this);
     QWidget* helloUserScreen = new EnterUserNameWidget(helloUserFrame);
 
@@ -141,4 +146,13 @@ void MainWindow::setupWelcomeScreen() {
 
     connect(slideOutAnimation, SIGNAL(finished()), slideOutAnimation, SLOT(deleteLater()));
     connect(slideOutAnimation, SIGNAL(finished()), helloUserFrame, SLOT(deleteLater()));
+#endif
+}
+
+void MainWindow::handleTrayIconSingleClick() {
+    QPoint cursorPosition = QCursor::pos();
+
+    // move() moves the left-upper corner of the window to the specified position
+    this->move(cursorPosition.x() - width(), cursorPosition.y() + 20);
+    this->show();
 }

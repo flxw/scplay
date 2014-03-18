@@ -20,6 +20,7 @@ public:
     void getStreamUrl(int songId);
     void getLikes();
     void getArtwork(int songId, QUrl artworkUrl);
+    int getUserId() const;
 
 public slots:
     void setUserPermaLink(QString name);
