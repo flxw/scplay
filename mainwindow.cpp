@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 }
 
 MainWindow::~MainWindow() {
-#ifdef QT_DEBUG
+#ifndef QT_DEBUG
     int uid = SoundCloudApi::getInstance().getUserId();
 
     QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
