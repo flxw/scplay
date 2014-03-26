@@ -22,7 +22,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupTrayIcon();
     setupSoundListView();
 
-#ifndef QT_DEBUG
+#ifdef QT_DEBUG
+    SoundCloudApi::getInstance().setUserId(62853215);
+#else
     QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
 
     int uid = settings.value("userId", -1).toInt();
@@ -32,8 +34,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     } else {
         SoundCloudApi::getInstance().setUserId(uid);
     }
-#else
-    SoundCloudApi::getInstance().setUserId(62853215);
 #endif
 }
 
