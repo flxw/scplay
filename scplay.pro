@@ -17,13 +17,11 @@ SOURCES += main.cpp\
     soundcloudapi.cpp \
     enterusernamewidget.cpp \
     playerwidget.cpp \
-    playlist.cpp \
     sounditem.cpp \
     listitem.cpp \
     datastore.cpp \
     mylistmodel.cpp \
     introwidget.cpp \
-    playlistmodel.cpp \
     soundlistdelegate.cpp
 
 HEADERS  += mainwindow.h \
@@ -32,13 +30,11 @@ HEADERS  += mainwindow.h \
     soundcloudapi.h \
     enterusernamewidget.h \
     playerwidget.h \
-    playlist.h \
     sounditem.h \
     listitem.h \
     datastore.h \
     mylistmodel.h \
     introwidget.h \
-    playlistmodel.h \
     soundlistdelegate.h
 
 FORMS    += mainwindow.ui \

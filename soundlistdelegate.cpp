@@ -27,12 +27,12 @@ void SoundListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     QFont font = painter->font();
 
-    font.setPointSize(11);
+    font.setPointSize(10);
     painter->setPen(titleColor);
     painter->setFont(font);
     painter->drawText(titleBaseline, sound.getTitle());
 
-    font.setPointSize(10);
+    font.setPointSize(9);
     painter->setPen(userColor);
     painter->setFont(font);
     painter->drawText(userBaseline, sound.getUser());
