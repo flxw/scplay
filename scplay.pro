@@ -22,7 +22,9 @@ SOURCES += main.cpp\
     listitem.cpp \
     datastore.cpp \
     mylistmodel.cpp \
-    introwidget.cpp
+    introwidget.cpp \
+    playlistmodel.cpp \
+    soundlistdelegate.cpp
 
 HEADERS  += mainwindow.h \
     soundmanager.h \
@@ -35,7 +37,9 @@ HEADERS  += mainwindow.h \
     listitem.h \
     datastore.h \
     mylistmodel.h \
-    introwidget.h
+    introwidget.h \
+    playlistmodel.h \
+    soundlistdelegate.h
 
 FORMS    += mainwindow.ui \
     enterusernamewidget.ui \

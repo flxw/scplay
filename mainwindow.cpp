@@ -11,6 +11,7 @@
 # include "enterusernamewidget.h"
 # include "playerwidget.h"
 # include "introwidget.h"
+# include "soundlistdelegate.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
 {
@@ -110,6 +111,7 @@ void MainWindow::setupSoundListView() {
     likeListModel = new LikeListModel(this);
 
     ui->songView->setModel(likeListModel);
+    ui->songView->setItemDelegate(new SoundListDelegate(this));
 
     QParallelAnimationGroup *animationGroup = new QParallelAnimationGroup(this);
     QPropertyAnimation *slideInAnimation = new QPropertyAnimation(ui->playerWidget, "geometry", animationGroup);
