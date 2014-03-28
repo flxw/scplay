@@ -1,7 +1,7 @@
-# include "soundmanager.h"
+# include "playbackmanager.h"
 # include "soundcloudapi.h"
 
-SoundManager::SoundManager(QObject *parent) :
+PlaybackManager::PlaybackManager(QObject *parent) :
     QObject(parent)
 {
     player = new QMediaPlayer(this);
@@ -14,11 +14,11 @@ SoundManager::SoundManager(QObject *parent) :
 
 
 // --- public functions
-bool SoundManager::isPlaying() {
+bool PlaybackManager::isPlaying() {
     return (player->state() == QMediaPlayer::PlayingState);
 }
 
-bool SoundManager::isUrlStillValid(const QUrl &url) {
+bool PlaybackManager::isUrlStillValid(const QUrl &url) {
     QString queryString = url.toString();
     int expireStringIndex = queryString.indexOf("Expires=") + 8;
     QString timeString = queryString.mid(expireStringIndex, 10);
@@ -30,7 +30,7 @@ bool SoundManager::isUrlStillValid(const QUrl &url) {
     else return false;
 }
 
-void SoundManager::playUrl(const QUrl &url) {
+void PlaybackManager::playUrl(const QUrl &url) {
     disconnect(player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(handlePlayerStateChange(QMediaPlayer::State)));
 
     player->stop();
@@ -42,11 +42,11 @@ void SoundManager::playUrl(const QUrl &url) {
 }
 
 // --- public slots
-void SoundManager::play() {
+void PlaybackManager::play() {
     player->play();
 }
 
-void SoundManager::pause() {
+void PlaybackManager::pause() {
     if (player->state() == QMediaPlayer::PlayingState) {
         player->pause();
     } else if (player->state() == QMediaPlayer::PausedState) {
@@ -54,22 +54,22 @@ void SoundManager::pause() {
     }
 }
 
-void SoundManager::next() {
+void PlaybackManager::next() {
     // TODO
 }
 
-void SoundManager::previous() {
+void PlaybackManager::previous() {
     // TODO
 }
 
-void SoundManager::requestNewPosition(int p) {
+void PlaybackManager::requestNewPosition(int p) {
     if (player->isSeekable())
         player->setPosition((qint64) p);
     else
         qDebug("not seekable :(");
 }
 
-void SoundManager::playSound(int id) {
+void PlaybackManager::playSound(int id) {
     lastRequestedSong = id;
 
     // make url validity check here
@@ -86,12 +86,12 @@ void SoundManager::playSound(int id) {
     SoundCloudApi::getInstance().getStreamUrl(id);
 }
 
-void SoundManager::enqueueSound(int id) {
+void PlaybackManager::enqueueSound(int id) {
 }
 
 
 // --- private slots
-void SoundManager::handlePlayerStateChange(QMediaPlayer::State state) {
+void PlaybackManager::handlePlayerStateChange(QMediaPlayer::State state) {
     switch(state) {
         case QMediaPlayer::StoppedState: emit finished(); break;
         case QMediaPlayer::PausedState:  emit paused(); break;
@@ -99,15 +99,15 @@ void SoundManager::handlePlayerStateChange(QMediaPlayer::State state) {
     }
 }
 
-void SoundManager::receiveStreamUrl(int id, QUrl url) {
+void PlaybackManager::receiveStreamUrl(int id, QUrl url) {
     idsForUrls.insert(id, url);
     playUrl(url);
 }
 
-void SoundManager::handleNewDuration(qint64 d) {
+void PlaybackManager::handleNewDuration(qint64 d) {
     emit newSongDuration(0, (int) d);
 }
 
-void SoundManager::handleNewPosition(qint64 p) {
+void PlaybackManager::handleNewPosition(qint64 p) {
     emit playTimeElapsed((int) p);
 }

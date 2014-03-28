@@ -12,7 +12,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    soundmanager.cpp \
     likelistmodel.cpp \
     soundcloudapi.cpp \
     enterusernamewidget.cpp \
@@ -22,10 +21,10 @@ SOURCES += main.cpp\
     datastore.cpp \
     mylistmodel.cpp \
     introwidget.cpp \
-    soundlistdelegate.cpp
+    soundlistdelegate.cpp \
+    playbackmanager.cpp
 
 HEADERS  += mainwindow.h \
-    soundmanager.h \
     likelistmodel.h \
     soundcloudapi.h \
     enterusernamewidget.h \
@@ -35,7 +34,8 @@ HEADERS  += mainwindow.h \
     datastore.h \
     mylistmodel.h \
     introwidget.h \
-    soundlistdelegate.h
+    soundlistdelegate.h \
+    playbackmanager.h
 
 FORMS    += mainwindow.ui \
     enterusernamewidget.ui \

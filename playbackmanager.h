@@ -1,16 +1,16 @@
-#ifndef SOUNDMANAGER_H
-#define SOUNDMANAGER_H
+#ifndef PLAYBACKMANAGER_H
+#define PLAYBACKMANAGER_H
 
 # include <QObject>
 
 # include <QMediaPlayer>
 # include <QMediaPlaylist>
 
-class SoundManager : public QObject
+class PlaybackManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit SoundManager(QObject *parent = 0);
+    explicit PlaybackManager(QObject *parent = 0);
 
     qint64 getDuration();
 
@@ -57,4 +57,4 @@ private:
     int lastRequestedSong;
 };
 
-#endif // SOUNDMANAGER_H
+#endif // PLAYBACKMANAGER_H

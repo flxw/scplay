@@ -10,7 +10,7 @@ PlayerWidget::PlayerWidget(QWidget *parent) : QWidget(parent), ui(new Ui::Player
     ui->setupUi(this);
 
     // component setup
-    setupSoundManager();
+    setupPlaybackManager();
 
     // connections
     connect(ui->prevButton, SIGNAL(clicked()), this, SLOT(playPreviousSong()));
@@ -104,8 +104,8 @@ void PlayerWidget::handleArtworkUpdate(int id, QPixmap &p) {
 }
 
 // -- private methods
-void PlayerWidget::setupSoundManager() {
-    soundManager = new SoundManager(this);
+void PlayerWidget::setupPlaybackManager() {
+    soundManager = new PlaybackManager(this);
 
     connect(soundManager, SIGNAL(started()),  this, SLOT(setPauseButtonIcon()));
     connect(soundManager, SIGNAL(paused()),   this, SLOT(setPlayButtonIcon()));

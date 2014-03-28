@@ -4,7 +4,7 @@
 # include <QWidget>
 # include <QModelIndex>
 
-# include "soundmanager.h"
+# include "playbackmanager.h"
 
 namespace Ui {
 class PlayerWidget;
@@ -27,7 +27,7 @@ public slots:
 
 // === private parts
 private: // - methods
-    void setupSoundManager();
+    void setupPlaybackManager();
 
 private slots:
     void handleSliderUserMove();
@@ -36,7 +36,7 @@ private slots:
     void setPauseButtonIcon();
 
 private: // - attributes
-    SoundManager *soundManager;
+    PlaybackManager *soundManager;
 
     Ui::PlayerWidget *ui;
 
