@@ -7,6 +7,8 @@ SoundModel::SoundModel(QObject *parent) : QAbstractListModel(parent) {
     state = FEEDING_LIKES;
 
     connect(&SoundCloudApi::getInstance(), SIGNAL(likesReceived(QList<Sound>)), this, SLOT(updateLikeData(QList<Sound>)));
+    connect(&SoundCloudApi::getInstance(), SIGNAL(playlistsReceived(QList<Sound>,QList<Playlist>)),
+            this, SLOT(updatePlaylists(QList<Sound>, QList<Playlist>)));
 }
 
 // --- public methods
@@ -55,6 +57,25 @@ void SoundModel::updateArtworkData(int id, QPixmap artwork) {
     sounds[id].setArtwork(artwork);
 }
 
+void SoundModel::updatePlaylists(QList<Sound> sounds, QList<Playlist> playlists) {
+    // merge the sounds into the sound database
+    for (QList<Sound>::const_iterator it = sounds.begin(); it != sounds.end(); ++it) {
+        int id = it->getId();
+
+        if (!this->sounds.contains(id)) {
+            this->sounds.insert(id, *it);
+        }
+    }
+
+    // simply update the playlist list
+    this->playlists = playlists;
+
+    if ((state == FEEDING_PLAYLISTS) || (state == FEEDING_PLAYLIST_SONGS)) {
+        emit dataChanged(QModelIndex(), QModelIndex());
+    }
+}
+
 void SoundModel::fill() {
     SoundCloudApi::getInstance().getLikes();
+    SoundCloudApi::getInstance().getPlaylists();
 }

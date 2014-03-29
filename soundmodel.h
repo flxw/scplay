@@ -6,6 +6,7 @@
 # include <QList>
 
 # include "sound.h"
+# include "playlist.h"
 
 class SoundModel : public QAbstractListModel
 {
@@ -26,6 +27,7 @@ public:
 protected slots:
     void updateLikeData(QList<Sound> newLikes);
     void updateArtworkData(int id, QPixmap artwork);
+    void updatePlaylists(QList<Sound> sounds, QList<Playlist> playlists);
     void fill();
 
     // --- attributes
@@ -33,10 +35,9 @@ protected:
     FeedState state;
 
     QHash<int, Sound> sounds;
-    //QHash<int, Playlist> playlists;
 
     QList<int> likeIds;
-    QList<int> playlistIds;
+    QList<Playlist> playlists;
 
     int currentPlaylistId;
 };

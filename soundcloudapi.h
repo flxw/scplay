@@ -9,6 +9,7 @@
 # include <QHash>
 
 # include "sound.h"
+# include "playlist.h"
 
 class SoundCloudApi : public QObject
 {
@@ -20,6 +21,8 @@ public:
     void getStreamUrl(int songId);
     void getLikes();
     void getArtwork(int songId, QUrl artworkUrl);
+    void getPlaylists();
+
     int getUserId() const;
 
 public slots:
@@ -32,6 +35,7 @@ signals:
     void artworkReceived(int songId, QPixmap& artwork);
     void isReady(); // emitted when a valid profile id has been set
     void badUserIdGiven();
+    void playlistsReceived(QList<Sound> sounds, QList<Playlist> playlists);
 
 
 // === privates =================================
@@ -46,12 +50,14 @@ private slots:
     void handleLikeReply(QNetworkReply *reply);
     void handleUserIdReply(QNetworkReply *reply);
     void handleArtworkReply(QNetworkReply *reply);
+    void handlePlaylistReply(QNetworkReply *reply);
 
 // --- attributes
 private:
     QHash<QNetworkReply*, int> waitingStreamUrlReplies;
     QHash<QNetworkReply*, int> waitingArtworkReplies;
     QList<QNetworkReply*>      waitingLikeReplies;
+    QList<QNetworkReply*>      waitingPlaylistReplies;
     QNetworkReply*             waitingUserIdReply;
 
     QNetworkAccessManager* networkManager;

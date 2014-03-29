@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     soundlistdelegate.cpp \
     playbackmanager.cpp \
     soundmodel.cpp \
-    sound.cpp
+    sound.cpp \
+    playlist.cpp
 
 HEADERS  += mainwindow.h \
     soundcloudapi.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     soundlistdelegate.h \
     playbackmanager.h \
     soundmodel.h \
-    sound.h
+    sound.h \
+    playlist.h
 
 FORMS    += mainwindow.ui \
     enterusernamewidget.ui \
