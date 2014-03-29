@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     // --- other setups
     setupTrayIcon();
     setupSoundListView();
+    setupSoundListViewControls();
 
 #ifdef QT_DEBUG
     SoundCloudApi::getInstance().setUserId(62853215);
@@ -119,10 +120,10 @@ void MainWindow::setupSoundListView() {
     slideInAnimation->setStartValue(QRect(QPoint(0, -140), ui->playerWidget->size()));
     slideInAnimation->setEndValue(QRect(QPoint(0,0), ui->playerWidget->size()));
 
-    QPropertyAnimation *shrinkAnimation = new QPropertyAnimation(ui->songView, "geometry", animationGroup);
+    QPropertyAnimation *shrinkAnimation = new QPropertyAnimation(ui->soundViewAndControls, "geometry", animationGroup);
     shrinkAnimation->setDuration(500);
-    shrinkAnimation->setStartValue(ui->songView->geometry());
-    shrinkAnimation->setEndValue(QRect(QPoint(10,140), ui->songView->size() - QSize(0,130)));
+    shrinkAnimation->setStartValue(ui->soundViewAndControls->geometry());
+    shrinkAnimation->setEndValue(QRect(QPoint(10,140), ui->soundViewAndControls->size() - QSize(0,130)));
 
     animationGroup->addAnimation(slideInAnimation);
     animationGroup->addAnimation(shrinkAnimation);
@@ -135,7 +136,6 @@ void MainWindow::setupSoundListView() {
 }
 
 void MainWindow::setupWelcomeScreen() {
-
     QFrame*  helloUserFrame  = new QFrame(this);
     QWidget* helloUserScreen = new EnterUserNameWidget(helloUserFrame);
     IntroWidget* introScreen = new IntroWidget(helloUserFrame);
@@ -163,10 +163,28 @@ void MainWindow::setupWelcomeScreen() {
     connect(slideOutAnimation2, SIGNAL(finished()), helloUserFrame, SLOT(deleteLater()));
 }
 
+void MainWindow::setupSoundListViewControls() {
+    connect(ui->likeButton, SIGNAL(toggled(bool)), this, SLOT(catchFalseLikeListSelectionToggles(bool)));
+    connect(ui->playlistButton, SIGNAL(toggled(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
+}
+
 void MainWindow::handleTrayIconSingleClick() {
     QPoint cursorPosition = QCursor::pos();
 
     // move() moves the left-upper corner of the window to the specified position
     this->move(cursorPosition.x() - width(), cursorPosition.y() + 20);
     this->show();
+}
+
+// --- private slots
+void MainWindow::catchFalseLikeListSelectionToggles(bool toggle) {
+    if (toggle) {
+        soundModel->switchToLikeFeed();
+    }
+}
+
+void MainWindow::catchFalsePlayListSelectionToggles(bool toggle) {
+    if (toggle) {
+        soundModel->switchToPlaylistFeed();
+    }
 }

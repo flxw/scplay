@@ -14,7 +14,8 @@ SoundModel::SoundModel(QObject *parent) : QAbstractListModel(parent) {
 // --- public methods
 Sound SoundModel::getItem(const QModelIndex& index) const {
     switch (state) {
-        case FEEDING_LIKES: return sounds[likeIds.at(index.row())];
+        case FEEDING_LIKES: return sounds[likeIds.at(index.row())]; break;
+        case FEEDING_PLAYLISTS: return playlists.at(index.row()); break;
         default: Q_ASSERT("this state should not yet be used!!!");
     }
 }
@@ -27,9 +28,10 @@ QVariant SoundModel::data(const QModelIndex &index, int role) const {
     return QVariant();
 }
 
-int SoundModel::rowCount(const QModelIndex &parent) const {
+int SoundModel::rowCount(const QModelIndex&) const {
     switch (state) {
-        case FEEDING_LIKES: return likeIds.count();
+        case FEEDING_LIKES: return likeIds.count(); break;
+        case FEEDING_PLAYLISTS: return playlists.count(); break;
     }
 }
 
@@ -78,4 +80,19 @@ void SoundModel::updatePlaylists(QList<Sound> sounds, QList<Playlist> playlists)
 void SoundModel::fill() {
     SoundCloudApi::getInstance().getLikes();
     SoundCloudApi::getInstance().getPlaylists();
+}
+
+void SoundModel::switchToPlaylistFeed() {
+    if (state != FEEDING_PLAYLISTS) {
+        state = FEEDING_PLAYLISTS;
+
+        emit dataChanged(QModelIndex(), QModelIndex());
+    }
+}
+
+void SoundModel::switchToLikeFeed() {
+    if (state != FEEDING_LIKES) {
+        state = FEEDING_LIKES;
+        emit dataChanged(QModelIndex(), QModelIndex());
+    }
 }

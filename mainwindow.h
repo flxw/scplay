@@ -29,7 +29,12 @@ private:
     void setupTrayIcon();
     void setupSoundListView();
     void setupWelcomeScreen();
+    void setupSoundListViewControls();
     void handleTrayIconSingleClick();
+
+private slots:
+    void catchFalseLikeListSelectionToggles(bool toggle);
+    void catchFalsePlayListSelectionToggles(bool toggle);
 
     // --- attributes
 private:

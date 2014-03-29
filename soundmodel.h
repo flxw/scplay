@@ -22,13 +22,18 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     QVariant data(const QModelIndex &index, int role) const;
 
-    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    int rowCount(const QModelIndex& = QModelIndex()) const;
 
-protected slots:
+public slots:
     void updateLikeData(QList<Sound> newLikes);
     void updateArtworkData(int id, QPixmap artwork);
     void updatePlaylists(QList<Sound> sounds, QList<Playlist> playlists);
     void fill();
+
+    // the model "feeds" data to the view, thus we switch the feed states
+    void switchToPlaylistFeed();
+    void switchToLikeFeed();
+    //void switchToPlaylistSongFeed(QModel)
 
     // --- attributes
 protected:
