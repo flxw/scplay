@@ -11,6 +11,7 @@ class PlaybackManager : public QObject
     Q_OBJECT
 public:
     explicit PlaybackManager(QObject *parent = 0);
+    ~PlaybackManager();
 
     qint64 getDuration();
 
