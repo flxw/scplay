@@ -108,9 +108,9 @@ void MainWindow::setupTrayIcon() {
 }
 
 void MainWindow::setupSoundListView() {
-    likeListModel = new LikeListModel(this);
+    soundModel = new SoundModel(this);
 
-    ui->songView->setModel(likeListModel);
+    ui->songView->setModel(soundModel);
     ui->songView->setItemDelegate(new SoundListDelegate(this));
 
     QParallelAnimationGroup *animationGroup = new QParallelAnimationGroup(this);
@@ -131,6 +131,7 @@ void MainWindow::setupSoundListView() {
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), animationGroup, SLOT(start()));
     connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
     connect(animationGroup, SIGNAL(finished()), this, SLOT(handleAnimationEnd()));
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), soundModel, SLOT(fill()));
 }
 
 void MainWindow::setupWelcomeScreen() {

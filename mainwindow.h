@@ -4,7 +4,7 @@
 # include <QMainWindow>
 # include <QSystemTrayIcon>
 
-# include "likelistmodel.h"
+# include "soundmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,7 +33,7 @@ private:
 
     // --- attributes
 private:
-    LikeListModel *likeListModel;
+    SoundModel *soundModel;
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;

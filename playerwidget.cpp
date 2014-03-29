@@ -1,8 +1,8 @@
 # include "playerwidget.h"
 # include "ui_playerwidget.h"
 
-# include "likelistmodel.h"
-# include "sounditem.h"
+# include "soundmodel.h"
+# include "sound.h"
 # include "soundcloudapi.h"
 
 PlayerWidget::PlayerWidget(QWidget *parent) : QWidget(parent), ui(new Ui::PlayerWidget)
@@ -29,8 +29,8 @@ PlayerWidget::~PlayerWidget()
 
 // -- public slots
 void PlayerWidget::handlePlayRequest(QModelIndex index) {
-    const MyListModel* currentModel = (MyListModel*)index.model();
-    const ListItem     song         = currentModel->getItem(index);
+    const SoundModel* currentModel = (SoundModel*)index.model();
+    const Sound       song         = currentModel->getItem(index);
 
     // should prev/next buttons be enabled?
     ui->prevButton->setEnabled(index.row() > 0);

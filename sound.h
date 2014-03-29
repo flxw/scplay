@@ -1,14 +1,14 @@
-#ifndef LISTITEM_H
-#define LISTITEM_H
+#ifndef SOUND_H
+#define SOUND_H
 
 # include <QString>
 # include <QUrl>
 # include <QPixmap>
 
-class ListItem
+class Sound
 {
 public:
-    ListItem();
+    Sound();
 
     const QPixmap& getArtwork() const;
     void setArtwork(QPixmap& p);
@@ -37,4 +37,4 @@ protected:
     int id;
 };
 
-#endif // LISTITEM_H
+#endif // SOUND_H

@@ -4,8 +4,6 @@
 # include <QJsonArray>
 # include <QJsonObject>
 
-# include "datastore.h"
-
 # define API_KEY "38e39454e5b0aff6f77120f1ab09386e"
 
 // --- public methods
@@ -62,8 +60,6 @@ SoundCloudApi::SoundCloudApi() {
     networkManager = new QNetworkAccessManager(this);
 
     connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(handleFinishedRequest(QNetworkReply*)));
-    connect(this, SIGNAL(likesReceived(QList<SoundItem>)), &DataStore::getInstance(), SLOT(updateLikes(QList<SoundItem>)));
-    connect(this, SIGNAL(isReady()), &DataStore::getInstance(), SLOT(initiallyFillStore()));
 }
 
 // --- private slots
@@ -111,12 +107,12 @@ void SoundCloudApi::handleLikeReply(QNetworkReply *reply) {
     QJsonArray  jsonArray = jsonDocument.array();
     QJsonObject songObject;
 
-    QList<SoundItem> likes;
+    QList<Sound> likes;
 
     for (QJsonArray::const_iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
         songObject = (*it).toObject();
 
-        SoundItem like;
+        Sound like;
 
         like.setId(songObject["id"].toInt());
         like.setTitle(songObject["title"].toString());

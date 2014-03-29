@@ -8,7 +8,7 @@
 # include <QNetworkReply>
 # include <QHash>
 
-# include "sounditem.h"
+# include "sound.h"
 
 class SoundCloudApi : public QObject
 {
@@ -28,7 +28,7 @@ public slots:
 
 signals:
     void streamUrlReceived(int songId, QUrl streamUrl);
-    void likesReceived(QList<SoundItem> likes);
+    void likesReceived(QList<Sound> likes);
     void artworkReceived(int songId, QPixmap& artwork);
     void isReady(); // emitted when a valid profile id has been set
     void badUserIdGiven();
