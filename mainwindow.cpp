@@ -90,6 +90,12 @@ void MainWindow::handleAnimationEnd() {
     ui->footerLabel->setPixmap(QPixmap(":/icons/grey_130x20.png"));
 }
 
+void MainWindow::displayNewSongNotification(QString title, QString user) {
+    if (!this->isVisible()) {
+        trayIcon->showMessage(QString("Now playing %1").arg(user), title);
+    }
+}
+
 // --- private functions
 void MainWindow::setupTrayIcon() {
     trayIcon = new QSystemTrayIcon(QIcon(":/icons/white.png"), this);
@@ -104,6 +110,7 @@ void MainWindow::setupTrayIcon() {
     trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
 
+    connect(ui->playerWidget, SIGNAL(songChanged(QString,QString)), this, SLOT(displayNewSongNotification(QString,QString)));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
 }

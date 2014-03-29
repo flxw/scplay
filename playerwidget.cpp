@@ -50,6 +50,8 @@ void PlayerWidget::handlePlayRequest(QModelIndex index) {
 
     currentSongIndex = index;
     currentSongId    = song.getId();
+
+    emit songChanged(song.getTitle(), song.getUser());
 }
 
 void PlayerWidget::togglePlayPause() {

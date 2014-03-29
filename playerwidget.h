@@ -27,6 +27,7 @@ public slots:
 
 signals:
     void playbackStarted();
+    void songChanged(QString title, QString user);
 
 // === private parts
 private: // - methods
