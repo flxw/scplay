@@ -117,4 +117,6 @@ void PlayerWidget::setupPlaybackManager() {
 
     // this is being connected to the pause slot, as the button is only enabled upon play beging
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
+
+    connect(soundManager, SIGNAL(started()), this, SIGNAL(playbackStarted()));
 }

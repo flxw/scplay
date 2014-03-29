@@ -129,7 +129,7 @@ void MainWindow::setupSoundListView() {
     animationGroup->addAnimation(shrinkAnimation);
 
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
-    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), animationGroup, SLOT(start()));
+    connect(ui->playerWidget, SIGNAL(playbackStarted()), animationGroup, SLOT(start()));
     connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
     connect(animationGroup, SIGNAL(finished()), this, SLOT(handleAnimationEnd()));
     connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), soundModel, SLOT(fill()));
@@ -180,11 +180,34 @@ void MainWindow::handleTrayIconSingleClick() {
 void MainWindow::catchFalseLikeListSelectionToggles(bool toggle) {
     if (toggle) {
         soundModel->switchToLikeFeed();
+
+        disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(displaySinglePlaylist(QModelIndex)));
+
+        connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
     }
 }
 
 void MainWindow::catchFalsePlayListSelectionToggles(bool toggle) {
     if (toggle) {
         soundModel->switchToPlaylistFeed();
+        ui->playlistButton->setStyleSheet("");
+        ui->playlistButton->setText("Playlists");
+
+        disconnect(ui->playlistButton, SIGNAL(clicked(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
+        disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+
+        connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(displaySinglePlaylist(QModelIndex)));
     }
+}
+
+void MainWindow::displaySinglePlaylist(QModelIndex index) {
+    ui->playlistButton->setStyleSheet("font-style: italic;");
+    ui->playlistButton->setText(soundModel->getItem(index).getTitle());
+    soundModel->switchToPlaylistSongFeed(index);
+
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(displaySinglePlaylist(QModelIndex)));
+    disconnect(ui->playlistButton, SIGNAL(toggled(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
+
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+    connect(ui->playlistButton, SIGNAL(clicked(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
 }

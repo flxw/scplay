@@ -6,6 +6,7 @@
 class Playlist : public Sound
 {
 public:
+    Playlist();
     Playlist(QList<int>& sounds);
 
     const QList<int>& getSounds() const;

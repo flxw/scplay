@@ -35,6 +35,7 @@ private:
 private slots:
     void catchFalseLikeListSelectionToggles(bool toggle);
     void catchFalsePlayListSelectionToggles(bool toggle);
+    void displaySinglePlaylist(QModelIndex index);
 
     // --- attributes
 private:

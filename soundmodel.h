@@ -24,6 +24,8 @@ public:
 
     int rowCount(const QModelIndex& = QModelIndex()) const;
 
+    void switchToPlaylistSongFeed(const QModelIndex &index);
+
 public slots:
     void updateLikeData(QList<Sound> newLikes);
     void updateArtworkData(int id, QPixmap artwork);
@@ -40,9 +42,10 @@ protected:
     FeedState state;
 
     QHash<int, Sound> sounds;
+    QHash<int, Playlist> playlists;
 
     QList<int> likeIds;
-    QList<Playlist> playlists;
+    QList<int> playlistIds;
 
     int currentPlaylistId;
 };

@@ -15,8 +15,8 @@ SoundModel::SoundModel(QObject *parent) : QAbstractListModel(parent) {
 Sound SoundModel::getItem(const QModelIndex& index) const {
     switch (state) {
         case FEEDING_LIKES: return sounds[likeIds.at(index.row())]; break;
-        case FEEDING_PLAYLISTS: return playlists.at(index.row()); break;
-        default: Q_ASSERT("this state should not yet be used!!!");
+        case FEEDING_PLAYLISTS: return playlists[playlistIds.at(index.row())]; break;
+        case FEEDING_PLAYLIST_SONGS: return sounds[playlists.value(currentPlaylistId).getSounds().at(index.row())];
     }
 }
 
@@ -31,8 +31,16 @@ QVariant SoundModel::data(const QModelIndex &index, int role) const {
 int SoundModel::rowCount(const QModelIndex&) const {
     switch (state) {
         case FEEDING_LIKES: return likeIds.count(); break;
-        case FEEDING_PLAYLISTS: return playlists.count(); break;
+        case FEEDING_PLAYLISTS: return playlistIds.count(); break;
+        case FEEDING_PLAYLIST_SONGS: return playlists[currentPlaylistId].getSounds().count(); break;
     }
+}
+
+void SoundModel::switchToPlaylistSongFeed(const QModelIndex& index) {
+    currentPlaylistId = playlistIds.at(index.row());
+    state = FEEDING_PLAYLIST_SONGS;
+
+    emit dataChanged(QModelIndex(), QModelIndex());
 }
 
 // --- public slots
@@ -69,8 +77,14 @@ void SoundModel::updatePlaylists(QList<Sound> sounds, QList<Playlist> playlists)
         }
     }
 
-    // simply update the playlist list
-    this->playlists = playlists;
+    // replace the hashed playlists with the new ones
+    this->playlists.clear();
+    this->playlistIds.clear();
+
+    for (QList<Playlist>::const_iterator it = playlists.begin(); it != playlists.end(); ++it) {
+        this->playlists.insert(it->getId(), *it);
+        this->playlistIds.append(it->getId());
+    }
 
     if ((state == FEEDING_PLAYLISTS) || (state == FEEDING_PLAYLIST_SONGS)) {
         emit dataChanged(QModelIndex(), QModelIndex());
@@ -85,7 +99,6 @@ void SoundModel::fill() {
 void SoundModel::switchToPlaylistFeed() {
     if (state != FEEDING_PLAYLISTS) {
         state = FEEDING_PLAYLISTS;
-
         emit dataChanged(QModelIndex(), QModelIndex());
     }
 }

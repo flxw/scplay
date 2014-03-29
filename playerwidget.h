@@ -25,6 +25,9 @@ public slots:
     void playPreviousSong();
     void handleArtworkUpdate(int id, QPixmap& p);
 
+signals:
+    void playbackStarted();
+
 // === private parts
 private: // - methods
     void setupPlaybackManager();
