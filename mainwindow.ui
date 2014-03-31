@@ -127,8 +127,8 @@
     <property name="toolTip">
      <string>Refresh</string>
     </property>
-    <property name="text">
-     <string>↻</string>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(:/icons/reload.png);</string>
     </property>
    </widget>
   </widget>

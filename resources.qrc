@@ -4,5 +4,6 @@
         <file>white_192x116.png</file>
         <file>placeholder.png</file>
         <file>grey_130x20.png</file>
+        <file>reload.png</file>
     </qresource>
 </RCC>
