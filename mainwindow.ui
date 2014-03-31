@@ -35,7 +35,7 @@
      <rect>
       <x>10</x>
       <y>375</y>
-      <width>281</width>
+      <width>260</width>
       <height>20</height>
      </rect>
     </property>
@@ -57,7 +57,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>274</width>
+      <width>280</width>
       <height>361</height>
      </rect>
     </property>
@@ -114,6 +114,22 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="reloadButton">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>375</y>
+      <width>20</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Refresh</string>
+    </property>
+    <property name="text">
+     <string>↻</string>
+    </property>
    </widget>
   </widget>
  </widget>

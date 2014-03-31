@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupTrayIcon();
     setupSoundListView();
     setupSoundListViewControls();
+    setupReloadButton();
 
 #ifdef QT_DEBUG
     SoundCloudApi::getInstance().setUserId(62853215);
@@ -173,6 +174,10 @@ void MainWindow::setupWelcomeScreen() {
 void MainWindow::setupSoundListViewControls() {
     connect(ui->likeButton, SIGNAL(toggled(bool)), this, SLOT(catchFalseLikeListSelectionToggles(bool)));
     connect(ui->playlistButton, SIGNAL(toggled(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
+}
+
+void MainWindow::setupReloadButton() {
+    connect(ui->reloadButton, SIGNAL(clicked()), soundModel, SLOT(fill()));
 }
 
 void MainWindow::handleTrayIconSingleClick() {

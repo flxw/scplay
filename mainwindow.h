@@ -31,6 +31,7 @@ private:
     void setupSoundListView();
     void setupWelcomeScreen();
     void setupSoundListViewControls();
+    void setupReloadButton();
     void handleTrayIconSingleClick();
 
 private slots:
