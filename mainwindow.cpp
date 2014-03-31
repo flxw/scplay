@@ -176,10 +176,35 @@ void MainWindow::setupSoundListViewControls() {
 }
 
 void MainWindow::handleTrayIconSingleClick() {
-    QPoint cursorPosition = QCursor::pos();
+    static QPoint windowPosition;
 
-    // move() moves the left-upper corner of the window to the specified position
-    this->move(cursorPosition.x() - width(), cursorPosition.y() + 20);
+    // initialize the static var windowPosition first
+    if (windowPosition.isNull()) {
+        QPoint iconPosition = trayIcon->geometry().center();
+        QSize mySize = this->size();
+
+        if (iconPosition.x() - mySize.width() < 0) {
+            // icon is located in the left corner
+            if (iconPosition.y() - mySize.height() < 0) {
+                // icon is located top-left
+                windowPosition = QPoint(iconPosition.x(), iconPosition.y() + 20);
+            } else {
+                // icon is located somwhere lower-left
+                windowPosition = QPoint(iconPosition.x(), iconPosition.y() - 20 - mySize.height());
+            }
+        } else {
+            // icon is located somewhere right of the left corner
+            if (iconPosition.y() - mySize.height() < 0) {
+                // icon is located top-right
+                windowPosition = QPoint(iconPosition.x() - mySize.width(), iconPosition.y() + 20);
+            } else {
+                // icon is located somwhere lower-right
+                windowPosition = QPoint(iconPosition.x() - mySize.width(), iconPosition.y() - 20 - mySize.height());
+            }
+        }
+    }
+
+    this->move(windowPosition);
     this->show();
 }
 
