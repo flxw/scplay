@@ -92,8 +92,8 @@ void SoundModel::updatePlaylists(QList<Sound> sounds, QList<Playlist> playlists)
 }
 
 void SoundModel::fill() {
-    SoundCloudApi::getInstance().getLikes();
-    SoundCloudApi::getInstance().getPlaylists();
+    SoundCloudApi::getInstance().requestLikes();
+    SoundCloudApi::getInstance().requestPlaylists();
 }
 
 void SoundModel::switchToPlaylistFeed() {

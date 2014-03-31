@@ -44,7 +44,7 @@ void PlayerWidget::handlePlayRequest(QModelIndex index) {
     if (song.hasArtwork()) {
         ui->artworkLabel->setPixmap(song.getArtwork());
     } else {
-        SoundCloudApi::getInstance().getArtwork(song.getId(), song.getArtworkUrl());
+        SoundCloudApi::getInstance().requestArtwork(song.getId(), song.getArtworkUrl());
         ui->artworkLabel->setPixmap(QPixmap(":/icons/placeholder.png"));
     }
 

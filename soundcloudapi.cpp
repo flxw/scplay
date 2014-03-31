@@ -13,7 +13,7 @@ SoundCloudApi& SoundCloudApi::getInstance() {
     return instance;
 }
 
-void SoundCloudApi::getStreamUrl(int songId) {
+void SoundCloudApi::requestStreamUrl(int songId) {
     static QString urlTemplate("http://api.sndcdn.com/i1/tracks/%1/streams?client_id=" API_KEY);
 
     QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(songId))));
@@ -21,7 +21,7 @@ void SoundCloudApi::getStreamUrl(int songId) {
     waitingStreamUrlReplies.insert(reply, songId);
 }
 
-void SoundCloudApi::getLikes() {
+void SoundCloudApi::requestLikes() {
     static QString urlTemplate("http://api.soundcloud.com/users/%1/favorites.json?client_id=" API_KEY);
 
     QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
@@ -29,13 +29,13 @@ void SoundCloudApi::getLikes() {
     waitingLikeReplies.append(reply);
 }
 
-void SoundCloudApi::getArtwork(int songId, QUrl artworkUrl) {
+void SoundCloudApi::requestArtwork(int songId, QUrl artworkUrl) {
     QNetworkReply* reply = networkManager->get(QNetworkRequest(artworkUrl));
 
     waitingArtworkReplies.insert(reply, songId);
 }
 
-void SoundCloudApi::getPlaylists() {
+void SoundCloudApi::requestPlaylists() {
     static QString urlTemplate("http://api.soundcloud.com/users/%1/playlists.json?client_id=" API_KEY);
 
     QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));

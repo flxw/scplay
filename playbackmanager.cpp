@@ -88,7 +88,7 @@ void PlaybackManager::playSound(int id) {
         }
     }
 
-    SoundCloudApi::getInstance().getStreamUrl(id);
+    SoundCloudApi::getInstance().requestStreamUrl(id);
 }
 
 void PlaybackManager::enqueueSound(int id) {

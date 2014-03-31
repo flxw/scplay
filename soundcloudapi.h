@@ -18,10 +18,10 @@ class SoundCloudApi : public QObject
 public:
     static SoundCloudApi& getInstance();
 
-    void getStreamUrl(int songId);
-    void getLikes();
-    void getArtwork(int songId, QUrl artworkUrl);
-    void getPlaylists();
+    void requestStreamUrl(int songId);
+    void requestLikes();
+    void requestArtwork(int songId, QUrl artworkUrl);
+    void requestPlaylists();
 
     int getUserId() const;
 
