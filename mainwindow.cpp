@@ -13,6 +13,8 @@
 # include "introwidget.h"
 # include "soundlistdelegate.h"
 
+# define VERSION "0.1.5"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -102,11 +104,14 @@ void MainWindow::setupTrayIcon() {
     trayIcon = new QSystemTrayIcon(QIcon(":/icons/white.png"), this);
 
     QMenu* trayMenu = new QMenu();
+    QAction* versionBar = new QAction("scplay " VERSION, this);
+    versionBar->setDisabled(true);
 
     trayMenu->addAction("\u25B6 / \u2016",    ui->playerWidget, SLOT(togglePlayPause()));
     trayMenu->addAction("\u25B6\u25B6\u007C", ui->playerWidget, SLOT(playNextSong()));
     trayMenu->addAction("\u007C\u25C0\u25C0", ui->playerWidget, SLOT(playPreviousSong()));
     trayMenu->addAction("Exit", this, SLOT(close()));
+    trayMenu->addAction(versionBar);
 
     trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
