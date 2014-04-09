@@ -6,5 +6,5 @@ before_install:
     - sudo apt-get install -qq qt5-default
 
 script:
-    - qmake -qt=qt5
+    - qmake
     - make
