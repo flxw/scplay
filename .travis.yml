@@ -4,10 +4,9 @@ before_install:
     - sudo apt-add-repository -y ppa:beineri/opt-qt521
     - sudo apt-get update -qq
     - sudo apt-get install -qq qt52-meta-full
-    - ls -lhR /opt/qt52
 
 script:
     - qmake --version
-    - /opt/qt52/qmake --version
-    - /opt/qt52/qmake 
+    - /opt/qt52/bin/qmake --version
+    - /opt/qt52/bin/qmake 
     - make
