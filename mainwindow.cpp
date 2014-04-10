@@ -26,8 +26,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 #ifdef QT_DEBUG
     SoundCloudApi::getInstance().setUserId(62853215);
 #else
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
-
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
     int uid = settings.value("userId", -1).toInt();
 
     if (uid < 0) {
@@ -42,7 +41,7 @@ MainWindow::~MainWindow() {
 #ifndef QT_DEBUG
     int uid = SoundCloudApi::getInstance().getUserId();
 
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
     settings.setValue("userId", uid);
 #endif
 
