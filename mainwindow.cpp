@@ -54,23 +54,12 @@ MainWindow::~MainWindow() {
 }
 
 // --- public functions
-bool MainWindow::event(QEvent* e)
-{
-    switch(e->type()) {
-    case QEvent::WindowActivate :
-        // gained focus
-        break;
-
-    case QEvent::WindowDeactivate :
+void MainWindow::focusOutEvent(QFocusEvent *e) {
 #ifndef QT_DEBUG
+    if (e->lostFocus()) {
         this->hide();
-#endif
-        break;
-
-    default: break;
     }
-
-    return QMainWindow::event(e) ;
+#endif
 }
 
 // --- public slots
