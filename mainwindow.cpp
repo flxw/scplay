@@ -23,8 +23,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
     // --- other setups
     setupTrayIcon();
+    setupModels();
     setupSoundListView();
-    setupSoundListViewControls();
     setupReloadButton();
 
 #ifdef QT_DEBUG
@@ -110,10 +110,16 @@ void MainWindow::setupTrayIcon() {
             this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
 }
 
-void MainWindow::setupSoundListView() {
-    soundModel = new SoundModel(this);
+void MainWindow::setupModels() {
+    soundStorage  = new SoundStorage(this);
+    likeModel     = new LikeModel(soundStorage, this);
+    playlistModel = new PlaylistModel(soundStorage, this);
 
-    ui->songView->setModel(soundModel);
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), soundStorage, SLOT(fill()));
+}
+
+void MainWindow::setupSoundListView() {
+    ui->songView->setModel(likeModel);
     ui->songView->setItemDelegate(new SoundListDelegate(this));
 
     QParallelAnimationGroup *animationGroup = new QParallelAnimationGroup(this);
@@ -132,9 +138,12 @@ void MainWindow::setupSoundListView() {
 
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
     connect(ui->playerWidget, SIGNAL(playbackStarted()), animationGroup, SLOT(start()));
+
     connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
     connect(animationGroup, SIGNAL(finished()), this, SLOT(handleAnimationEnd()));
-    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), soundModel, SLOT(fill()));
+
+    connect(ui->likeButton, SIGNAL(clicked()), this, SLOT(switchToLikeDisplay()));
+    connect(ui->playlistButton, SIGNAL(clicked()), this, SLOT(switchToPlaylistListingDisplay()));
 }
 
 void MainWindow::setupWelcomeScreen() {
@@ -165,13 +174,8 @@ void MainWindow::setupWelcomeScreen() {
     connect(slideOutAnimation2, SIGNAL(finished()), helloUserFrame, SLOT(deleteLater()));
 }
 
-void MainWindow::setupSoundListViewControls() {
-    connect(ui->likeButton, SIGNAL(toggled(bool)), this, SLOT(catchFalseLikeListSelectionToggles(bool)));
-    connect(ui->playlistButton, SIGNAL(toggled(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
-}
-
 void MainWindow::setupReloadButton() {
-    connect(ui->reloadButton, SIGNAL(clicked()), soundModel, SLOT(fill()));
+    connect(ui->reloadButton, SIGNAL(clicked()), soundStorage, SLOT(fill()));
 }
 
 void MainWindow::handleTrayIconSingleClick() {
@@ -207,38 +211,16 @@ void MainWindow::handleTrayIconSingleClick() {
     this->show();
 }
 
-// --- private slots
-void MainWindow::catchFalseLikeListSelectionToggles(bool toggle) {
-    if (toggle) {
-        soundModel->switchToLikeFeed();
+void MainWindow::switchToPlaylistListingDisplay() {
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 
-        disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(displaySinglePlaylist(QModelIndex)));
-
-        connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
-    }
+    ui->songView->setModel(playlistModel);
 }
 
-void MainWindow::catchFalsePlayListSelectionToggles(bool toggle) {
-    if (toggle) {
-        soundModel->switchToPlaylistFeed();
-        ui->playlistButton->setStyleSheet("");
-        ui->playlistButton->setText("Playlists");
+void MainWindow::switchToLikeDisplay() {
+    disconnect(ui->songView);
 
-        disconnect(ui->playlistButton, SIGNAL(clicked(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
-        disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
-
-        connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(displaySinglePlaylist(QModelIndex)));
-    }
-}
-
-void MainWindow::displaySinglePlaylist(QModelIndex index) {
-    ui->playlistButton->setStyleSheet("font-style: italic;");
-    ui->playlistButton->setText(soundModel->getItem(index).getTitle());
-    soundModel->switchToPlaylistSongFeed(index);
-
-    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(displaySinglePlaylist(QModelIndex)));
-    disconnect(ui->playlistButton, SIGNAL(toggled(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
+    ui->songView->setModel(likeModel);
 
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
-    connect(ui->playlistButton, SIGNAL(clicked(bool)), this, SLOT(catchFalsePlayListSelectionToggles(bool)));
 }

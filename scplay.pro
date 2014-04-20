@@ -18,9 +18,12 @@ SOURCES += main.cpp\
     introwidget.cpp \
     soundlistdelegate.cpp \
     playbackmanager.cpp \
-    soundmodel.cpp \
     sound.cpp \
-    playlist.cpp
+    playlist.cpp \
+    likemodel.cpp \
+    soundstorage.cpp \
+    playlistmodel.cpp \
+    listmodelbase.cpp
 
 HEADERS  += mainwindow.h \
     soundcloudapi.h \
@@ -29,9 +32,12 @@ HEADERS  += mainwindow.h \
     introwidget.h \
     soundlistdelegate.h \
     playbackmanager.h \
-    soundmodel.h \
     sound.h \
-    playlist.h
+    playlist.h \
+    likemodel.h \
+    soundstorage.h \
+    playlistmodel.h \
+    listmodelbase.h
 
 FORMS    += mainwindow.ui \
     enterusernamewidget.ui \
