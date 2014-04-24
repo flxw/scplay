@@ -13,7 +13,7 @@
 # include "introwidget.h"
 # include "soundlistdelegate.h"
 
-# define VERSION "0.1.5"
+# define VERSION "0.1.6"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
 {
