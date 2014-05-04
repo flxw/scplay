@@ -210,31 +210,12 @@ void MainWindow::switchToPlaylistListingDisplay() {
     disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 
     ui->songView->setModel(playlistModel);
-    ui->playlistButton->setStyleSheet("");
-    ui->playlistButton->setText("Playlists");
-
-    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 }
 
 void MainWindow::switchToLikeDisplay() {
-    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
+    disconnect(ui->songView);
+
     ui->songView->setModel(likeModel);
-    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
-}
 
-void MainWindow::selectPlaylist(QModelIndex index) {
-    // introducing a possible memory leak here....
-    PlaylistSoundListModel *playlistSoundModel = new PlaylistSoundListModel(soundStorage);
-    int selectedPlaylistId = ((ListModelBase*)index.model())->getItem(index).getId();
-    Playlist selectedPlaylist = soundStorage->getPlaylistById(selectedPlaylistId);
-
-    playlistSoundModel->updateSoundIds(selectedPlaylist.getSounds());
-
-    ui->playlistButton->setStyleSheet("font-style: italic");
-    ui->playlistButton->setText(selectedPlaylist.getTitle());
-
-    // put the model and connections into place here
-    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
-    ui->songView->setModel(playlistSoundModel);
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 }

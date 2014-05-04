@@ -15,7 +15,7 @@ public:
     explicit SoundStorage(QObject *parent = 0);
 
     Sound getSoundById(int id) const;
-    Playlist getPlaylistById(int id) const;
+    Sound getPlaylistById(int id) const;
 
 signals:
     void playlistsUpdated(QList<int> newPlaylistIds);

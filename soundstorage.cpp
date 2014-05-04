@@ -13,7 +13,7 @@ Sound SoundStorage::getSoundById(int id) const {
     return sounds.value(id);
 }
 
-Playlist SoundStorage::getPlaylistById(int id) const {
+Sound SoundStorage::getPlaylistById(int id) const {
     return playlists.value(id);
 }
 

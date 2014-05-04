@@ -23,8 +23,7 @@ SOURCES += main.cpp\
     likemodel.cpp \
     soundstorage.cpp \
     playlistmodel.cpp \
-    listmodelbase.cpp \
-    playlistsoundlistmodel.cpp
+    listmodelbase.cpp
 
 HEADERS  += mainwindow.h \
     soundcloudapi.h \
@@ -38,8 +37,7 @@ HEADERS  += mainwindow.h \
     likemodel.h \
     soundstorage.h \
     playlistmodel.h \
-    listmodelbase.h \
-    playlistsoundlistmodel.h
+    listmodelbase.h
 
 FORMS    += mainwindow.ui \
     enterusernamewidget.ui \
