@@ -24,6 +24,7 @@ public:
 
 public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
+    void handleAnimationEnd();
     void displayNewSongNotification(QString title,QString user);
 
     void switchToPlaylistListingDisplay();

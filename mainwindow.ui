@@ -46,10 +46,7 @@
      </font>
     </property>
     <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap resource="resources.qrc">:/icons/grey_130x20.png</pixmap>
+     <string>Double-click a sound to begin!</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -145,8 +142,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
