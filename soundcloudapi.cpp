@@ -13,7 +13,7 @@ SoundCloudApi& SoundCloudApi::getInstance() {
     return instance;
 }
 
-void SoundCloudApi::getStreamUrl(int songId) {
+void SoundCloudApi::requestStreamUrl(int songId) {
     static QString urlTemplate("http://api.sndcdn.com/i1/tracks/%1/streams?client_id=" API_KEY);
 
     QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(songId))));
@@ -21,7 +21,7 @@ void SoundCloudApi::getStreamUrl(int songId) {
     waitingStreamUrlReplies.insert(reply, songId);
 }
 
-void SoundCloudApi::getLikes() {
+void SoundCloudApi::requestLikes() {
     static QString urlTemplate("http://api.soundcloud.com/users/%1/favorites.json?client_id=" API_KEY);
 
     QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
@@ -29,10 +29,18 @@ void SoundCloudApi::getLikes() {
     waitingLikeReplies.append(reply);
 }
 
-void SoundCloudApi::getArtwork(int songId, QUrl artworkUrl) {
+void SoundCloudApi::requestArtwork(int songId, QUrl artworkUrl) {
     QNetworkReply* reply = networkManager->get(QNetworkRequest(artworkUrl));
 
     waitingArtworkReplies.insert(reply, songId);
+}
+
+void SoundCloudApi::requestPlaylists() {
+    static QString urlTemplate("http://api.soundcloud.com/users/%1/playlists.json?client_id=" API_KEY);
+
+    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
+
+    waitingPlaylistReplies.append(reply);
 }
 
 int SoundCloudApi::getUserId() const {
@@ -73,6 +81,8 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
             handleUserIdReply(reply);
         } else if (waitingArtworkReplies.contains(reply)) {
             handleArtworkReply(reply);
+        } else if (waitingPlaylistReplies.contains(reply)) {
+            handlePlaylistReply(reply);
         }
     } else {
         qDebug("Network error %i | %s", (int)reply->error(), reply->url().toString().toStdString().c_str());
@@ -86,6 +96,8 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
         } else if (waitingLikeReplies.contains(reply)){
             waitingLikeReplies.removeOne(reply);
             // emit badLikeRequest?!
+        } else if (waitingPlaylistReplies.contains(reply)) {
+            // emit badPlaylistRequest?!
         }
     }
 }
@@ -148,4 +160,50 @@ void SoundCloudApi::handleArtworkReply(QNetworkReply *reply) {
     if (p.loadFromData(picBytes, "JPG")) {
         emit artworkReceived(id, p);
     }
+}
+
+void SoundCloudApi::handlePlaylistReply(QNetworkReply *reply) {
+    QString replyString = QString(reply->readAll());
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(replyString.toUtf8());
+    QJsonArray  jsonArray = jsonDocument.array();
+
+    QList<Sound> sounds;
+    QList<Playlist> playlists;
+
+    for (QJsonArray::const_iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
+        QJsonObject playlistJson = (*it).toObject();
+
+        QList<int> playlistSounds;
+
+        // read all tracks from this playlist
+        QJsonArray playlistSoundsJson = playlistJson["tracks"].toArray();
+
+        for (QJsonArray::const_iterator psit = playlistSoundsJson.begin(); psit != playlistSoundsJson.end(); ++psit) {
+            QJsonObject soundJson = (*psit).toObject();
+
+            Sound sound;
+
+            sound.setId(soundJson["id"].toInt());
+            sound.setTitle(soundJson["title"].toString());
+            sound.setUser(soundJson["user"].toObject()["username"].toString());
+            sound.setArtworkUrl(soundJson["artwork_url"].toString());
+
+            sounds.append(sound);
+            playlistSounds.append(sound.getId());
+        }
+
+        // provide some information about this playlist
+        Playlist playlist(playlistSounds);
+
+        playlist.setId(playlistJson["id"].toInt());
+        playlist.setUser(playlistJson["user"].toObject()["username"].toString());
+        playlist.setTitle(playlistJson["title"].toString());
+        playlist.setArtworkUrl(playlistJson["artwork_url"].toString());
+
+        playlists.append(playlist);
+    }
+
+    waitingPlaylistReplies.removeOne(reply);
+
+    emit playlistsReceived(sounds, playlists);
 }

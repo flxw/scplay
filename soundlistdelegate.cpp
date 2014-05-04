@@ -1,5 +1,5 @@
 # include "soundlistdelegate.h"
-# include "soundmodel.h"
+# include "listmodelbase.h"
 # include "sound.h"
 
 # include <QPainter>
@@ -14,7 +14,7 @@ void SoundListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     if (option.state & QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.highlight());
 
-    Sound sound = ((SoundModel*)index.model())->getItem(index);
+    const Sound sound = ((ListModelBase*)index.model())->getItem(index);
 
     QPoint titleBaseline = option.rect.topLeft() + QPoint(5, 33);
     QPoint userBaseline  = option.rect.topLeft() + QPoint(5, 17);

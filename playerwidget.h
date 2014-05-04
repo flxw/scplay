@@ -25,6 +25,10 @@ public slots:
     void playPreviousSong();
     void handleArtworkUpdate(int id, QPixmap& p);
 
+signals:
+    void playbackStarted();
+    void songChanged(QString title, QString user);
+
 // === private parts
 private: // - methods
     void setupPlaybackManager();

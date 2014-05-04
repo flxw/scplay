@@ -1,7 +1,7 @@
 # include "playerwidget.h"
 # include "ui_playerwidget.h"
 
-# include "soundmodel.h"
+# include "listmodelbase.h"
 # include "sound.h"
 # include "soundcloudapi.h"
 
@@ -29,8 +29,8 @@ PlayerWidget::~PlayerWidget()
 
 // -- public slots
 void PlayerWidget::handlePlayRequest(QModelIndex index) {
-    const SoundModel* currentModel = (SoundModel*)index.model();
-    const Sound       song         = currentModel->getItem(index);
+    const ListModelBase* currentModel = (ListModelBase*) index.model();
+    const Sound          song         = currentModel->getItem(index);
 
     // should prev/next buttons be enabled?
     ui->prevButton->setEnabled(index.row() > 0);
@@ -44,12 +44,14 @@ void PlayerWidget::handlePlayRequest(QModelIndex index) {
     if (song.hasArtwork()) {
         ui->artworkLabel->setPixmap(song.getArtwork());
     } else {
-        SoundCloudApi::getInstance().getArtwork(song.getId(), song.getArtworkUrl());
+        SoundCloudApi::getInstance().requestArtwork(song.getId(), song.getArtworkUrl());
         ui->artworkLabel->setPixmap(QPixmap(":/icons/placeholder.png"));
     }
 
     currentSongIndex = index;
     currentSongId    = song.getId();
+
+    emit songChanged(song.getTitle(), song.getUser());
 }
 
 void PlayerWidget::togglePlayPause() {
@@ -117,4 +119,6 @@ void PlayerWidget::setupPlaybackManager() {
 
     // this is being connected to the pause slot, as the button is only enabled upon play beging
     connect(ui->playPauseButton, SIGNAL(clicked()), soundManager, SLOT(pause()));
+
+    connect(soundManager, SIGNAL(started()), this, SIGNAL(playbackStarted()));
 }

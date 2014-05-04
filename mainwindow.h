@@ -4,7 +4,10 @@
 # include <QMainWindow>
 # include <QSystemTrayIcon>
 
-# include "soundmodel.h"
+# include "likemodel.h"
+# include "playlistmodel.h"
+# include "playlistsoundlistmodel.h"
+# include "soundstorage.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,22 +21,33 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    bool event(QEvent* e);
+    void focusOutEvent(QFocusEvent *e);
 
 public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
     void handleAnimationEnd();
+    void displayNewSongNotification(QString title,QString user);
+
+    void switchToPlaylistListingDisplay();
+    void switchToLikeDisplay();
+
+    void selectPlaylist(QModelIndex index);
 
     // --- private section ----------------------
 private:
     void setupTrayIcon();
+    void setupModels();
     void setupSoundListView();
     void setupWelcomeScreen();
+    void setupReloadButton();
     void handleTrayIconSingleClick();
+
 
     // --- attributes
 private:
-    SoundModel *soundModel;
+    LikeModel *likeModel;
+    PlaylistModel *playlistModel;
+    SoundStorage *soundStorage;
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;

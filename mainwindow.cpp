@@ -13,6 +13,8 @@
 # include "introwidget.h"
 # include "soundlistdelegate.h"
 
+# define VERSION "0.1.6"
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -21,7 +23,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
     // --- other setups
     setupTrayIcon();
+    setupModels();
     setupSoundListView();
+    setupReloadButton();
 
 #ifdef QT_DEBUG
     SoundCloudApi::getInstance().setUserId(62853215);
@@ -49,23 +53,12 @@ MainWindow::~MainWindow() {
 }
 
 // --- public functions
-bool MainWindow::event(QEvent* e)
-{
-    switch(e->type()) {
-    case QEvent::WindowActivate :
-        // gained focus
-        break;
-
-    case QEvent::WindowDeactivate :
+void MainWindow::focusOutEvent(QFocusEvent *e) {
 #ifndef QT_DEBUG
+    if (e->lostFocus()) {
         this->hide();
-#endif
-        break;
-
-    default: break;
     }
-
-    return QMainWindow::event(e) ;
+#endif
 }
 
 // --- public slots
@@ -88,28 +81,44 @@ void MainWindow::handleAnimationEnd() {
     ui->footerLabel->setPixmap(QPixmap(":/icons/grey_130x20.png"));
 }
 
+void MainWindow::displayNewSongNotification(QString title, QString user) {
+    if (!this->isVisible()) {
+        trayIcon->showMessage(QString("Now playing %1").arg(user), title);
+    }
+}
+
 // --- private functions
 void MainWindow::setupTrayIcon() {
     trayIcon = new QSystemTrayIcon(QIcon(":/icons/white.png"), this);
 
     QMenu* trayMenu = new QMenu();
+    QAction* versionBar = new QAction("scplay " VERSION, this);
+    versionBar->setDisabled(true);
 
     trayMenu->addAction("\u25B6 / \u2016",    ui->playerWidget, SLOT(togglePlayPause()));
     trayMenu->addAction("\u25B6\u25B6\u007C", ui->playerWidget, SLOT(playNextSong()));
     trayMenu->addAction("\u007C\u25C0\u25C0", ui->playerWidget, SLOT(playPreviousSong()));
     trayMenu->addAction("Exit", this, SLOT(close()));
+    trayMenu->addAction(versionBar);
 
     trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
 
+    connect(ui->playerWidget, SIGNAL(songChanged(QString,QString)), this, SLOT(displayNewSongNotification(QString,QString)));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
 }
 
-void MainWindow::setupSoundListView() {
-    soundModel = new SoundModel(this);
+void MainWindow::setupModels() {
+    soundStorage  = new SoundStorage(this);
+    likeModel     = new LikeModel(soundStorage, this);
+    playlistModel = new PlaylistModel(soundStorage, this);
 
-    ui->songView->setModel(soundModel);
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), soundStorage, SLOT(fill()));
+}
+
+void MainWindow::setupSoundListView() {
+    ui->songView->setModel(likeModel);
     ui->songView->setItemDelegate(new SoundListDelegate(this));
 
     QParallelAnimationGroup *animationGroup = new QParallelAnimationGroup(this);
@@ -118,23 +127,25 @@ void MainWindow::setupSoundListView() {
     slideInAnimation->setStartValue(QRect(QPoint(0, -140), ui->playerWidget->size()));
     slideInAnimation->setEndValue(QRect(QPoint(0,0), ui->playerWidget->size()));
 
-    QPropertyAnimation *shrinkAnimation = new QPropertyAnimation(ui->songView, "geometry", animationGroup);
+    QPropertyAnimation *shrinkAnimation = new QPropertyAnimation(ui->soundViewAndControls, "geometry", animationGroup);
     shrinkAnimation->setDuration(500);
-    shrinkAnimation->setStartValue(ui->songView->geometry());
-    shrinkAnimation->setEndValue(QRect(QPoint(10,140), ui->songView->size() - QSize(0,130)));
+    shrinkAnimation->setStartValue(ui->soundViewAndControls->geometry());
+    shrinkAnimation->setEndValue(QRect(QPoint(10,140), ui->soundViewAndControls->size() - QSize(0,130)));
 
     animationGroup->addAnimation(slideInAnimation);
     animationGroup->addAnimation(shrinkAnimation);
 
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
-    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), animationGroup, SLOT(start()));
+    connect(ui->playerWidget, SIGNAL(playbackStarted()), animationGroup, SLOT(start()));
+
     connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
     connect(animationGroup, SIGNAL(finished()), this, SLOT(handleAnimationEnd()));
-    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), soundModel, SLOT(fill()));
+
+    connect(ui->likeButton, SIGNAL(clicked()), this, SLOT(switchToLikeDisplay()));
+    connect(ui->playlistButton, SIGNAL(clicked()), this, SLOT(switchToPlaylistListingDisplay()));
 }
 
 void MainWindow::setupWelcomeScreen() {
-
     QFrame*  helloUserFrame  = new QFrame(this);
     QWidget* helloUserScreen = new EnterUserNameWidget(helloUserFrame);
     IntroWidget* introScreen = new IntroWidget(helloUserFrame);
@@ -162,10 +173,72 @@ void MainWindow::setupWelcomeScreen() {
     connect(slideOutAnimation2, SIGNAL(finished()), helloUserFrame, SLOT(deleteLater()));
 }
 
-void MainWindow::handleTrayIconSingleClick() {
-    QPoint cursorPosition = QCursor::pos();
+void MainWindow::setupReloadButton() {
+    connect(ui->reloadButton, SIGNAL(clicked()), soundStorage, SLOT(fill()));
+}
 
-    // move() moves the left-upper corner of the window to the specified position
-    this->move(cursorPosition.x() - width(), cursorPosition.y() + 20);
+void MainWindow::handleTrayIconSingleClick() {
+    static QPoint windowPosition;
+
+    // initialize the static var windowPosition first
+    if (windowPosition.isNull()) {
+        QPoint iconPosition = trayIcon->geometry().center();
+        QSize mySize = this->size();
+
+        if (iconPosition.x() - mySize.width() < 0) {
+            // icon is located in the left corner
+            if (iconPosition.y() - mySize.height() < 0) {
+                // icon is located top-left
+                windowPosition = QPoint(iconPosition.x(), iconPosition.y() + 20);
+            } else {
+                // icon is located somwhere lower-left
+                windowPosition = QPoint(iconPosition.x(), iconPosition.y() - 20 - mySize.height());
+            }
+        } else {
+            // icon is located somewhere right of the left corner
+            if (iconPosition.y() - mySize.height() < 0) {
+                // icon is located top-right
+                windowPosition = QPoint(iconPosition.x() - mySize.width(), iconPosition.y() + 20);
+            } else {
+                // icon is located somwhere lower-right
+                windowPosition = QPoint(iconPosition.x() - mySize.width(), iconPosition.y() - 20 - mySize.height());
+            }
+        }
+    }
+
+    this->move(windowPosition);
     this->show();
+}
+
+void MainWindow::switchToPlaylistListingDisplay() {
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+
+    ui->songView->setModel(playlistModel);
+    ui->playlistButton->setStyleSheet("");
+    ui->playlistButton->setText("Playlists");
+
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
+}
+
+void MainWindow::switchToLikeDisplay() {
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
+    ui->songView->setModel(likeModel);
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+}
+
+void MainWindow::selectPlaylist(QModelIndex index) {
+    // introducing a possible memory leak here....
+    PlaylistSoundListModel *playlistSoundModel = new PlaylistSoundListModel(soundStorage);
+    int selectedPlaylistId = ((ListModelBase*)index.model())->getItem(index).getId();
+    Playlist selectedPlaylist = soundStorage->getPlaylistById(selectedPlaylistId);
+
+    playlistSoundModel->updateSoundIds(selectedPlaylist.getSounds());
+
+    ui->playlistButton->setStyleSheet("font-style: italic");
+    ui->playlistButton->setText(selectedPlaylist.getTitle());
+
+    // put the model and connections into place here
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
+    ui->songView->setModel(playlistSoundModel);
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 }
