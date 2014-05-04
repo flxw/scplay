@@ -20,8 +20,9 @@
 #nextButton {
 	color: #fff;
 	border-style: solid;
-	border-width:0px;
-	background-color: rgba(255,72,0,.8);
+	border-width:1px;
+	border-color: rgba(255,102,0,.75);
+	background-color: qlineargradient(x1:0, y1:0, x2: 0, y2: 1, stop: 0 rgba(255,102,0,.7), stop: 1 rgba(255,17,0,.7));
 }
 
 #playPauseButton:hover,
@@ -108,9 +109,6 @@ QSlider::sub-page:horizontal {
 }
 </string>
    </property>
-   <property name="value">
-    <number>50</number>
-   </property>
    <property name="tracking">
     <bool>false</bool>
    </property>
@@ -131,7 +129,7 @@ QSlider::sub-page:horizontal {
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>:/icons/placeholder.png</pixmap>
+    <pixmap resource="resources.qrc">:/icons/placeholder.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -200,6 +198,8 @@ QSlider::sub-page:horizontal {
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
