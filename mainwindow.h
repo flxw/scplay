@@ -5,8 +5,9 @@
 # include <QSystemTrayIcon>
 
 # include "likemodel.h"
-# include "soundstorage.h"
 # include "playlistmodel.h"
+# include "playlistsoundlistmodel.h"
+# include "soundstorage.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +30,8 @@ public slots:
 
     void switchToPlaylistListingDisplay();
     void switchToLikeDisplay();
+
+    void selectPlaylist(QModelIndex index);
 
     // --- private section ----------------------
 private:
