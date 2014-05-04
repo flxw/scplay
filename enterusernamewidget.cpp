@@ -8,15 +8,7 @@ EnterUserNameWidget::EnterUserNameWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    wobbleAnimation = new QPropertyAnimation(ui->lineEdit, "geometry", this);
-
-    wobbleAnimation->setDuration(750);
-    wobbleAnimation->setStartValue(QRect(32, ui->lineEdit->pos().y(), ui->lineEdit->width(), ui->lineEdit->height()));
-    wobbleAnimation->setEndValue(ui->lineEdit->geometry());
-    wobbleAnimation->setEasingCurve(QEasingCurve::OutElastic);
-
-    connect(ui->lineEdit, SIGNAL(returnPressed()), this, SLOT(checkInput()));
-    connect(&SoundCloudApi::getInstance(), SIGNAL(badUserIdGiven()), wobbleAnimation, SLOT(start()));
+    connect(ui->loginButton, SIGNAL(clicked()), this, SLOT(beginAuth()));
 }
 
 EnterUserNameWidget::~EnterUserNameWidget()
@@ -24,12 +16,6 @@ EnterUserNameWidget::~EnterUserNameWidget()
     delete ui;
 }
 
-void EnterUserNameWidget::checkInput() {
-    QString input = ui->lineEdit->text();
-
-    if (!input.contains("/")) {
-        SoundCloudApi::getInstance().setUserPermaLink(input);
-    } else {
-        wobbleAnimation->start();
-    }
+void EnterUserNameWidget::beginAuth() {
+    SoundCloudApi::getInstance().requestAuthentification();
 }

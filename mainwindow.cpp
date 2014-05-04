@@ -27,8 +27,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupSoundListView();
     setupReloadButton();
 
+    setupWelcomeScreen();
+
 #ifdef QT_DEBUG
-    SoundCloudApi::getInstance().setUserId(62853215);
 #else
     QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
 
@@ -111,7 +112,7 @@ void MainWindow::setupModels() {
     likeModel     = new LikeModel(soundStorage, this);
     playlistModel = new PlaylistModel(soundStorage, this);
 
-    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), soundStorage, SLOT(fill()));
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isAuthenticated()), soundStorage, SLOT(fill()));
 }
 
 void MainWindow::setupSoundListView() {
@@ -162,7 +163,7 @@ void MainWindow::setupWelcomeScreen() {
     helloUserFrame->setMinimumSize(QSize(600,400));
     helloUserFrame->setStyleSheet("background-color: #333;");
 
-    connect(&SoundCloudApi::getInstance(), SIGNAL(isReady()), slideOutAnimation1, SLOT(start()));
+    connect(&SoundCloudApi::getInstance(), SIGNAL(isAuthenticated()), slideOutAnimation1, SLOT(start()));
     connect(slideOutAnimation1, SIGNAL(finished()), slideOutAnimation1, SLOT(deleteLater()));
     connect(slideOutAnimation1, SIGNAL(finished()), introScreen, SLOT(setFocus()));
     connect(introScreen, SIGNAL(introDone()), slideOutAnimation2, SLOT(start()));

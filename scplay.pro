@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include(o2/o2.pri)
+
 QT       += network multimedia widgets core gui
 
 TARGET = scplay
@@ -46,5 +48,3 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     resources.qrc
-
-OTHER_FILES +=

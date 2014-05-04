@@ -3,6 +3,7 @@
 
 # include <QWidget>
 # include <QPropertyAnimation>
+# include <QKeyEvent>
 
 
 namespace Ui {
@@ -18,7 +19,7 @@ public:
     ~EnterUserNameWidget();
 
 private slots:
-    void checkInput();
+    void beginAuth();
 
 private:
     Ui::EnterUserNameWidget *ui;

@@ -3,8 +3,11 @@
 # include <QJsonDocument>
 # include <QJsonArray>
 # include <QJsonObject>
+# include <QDesktopServices>
 
-# define API_KEY "38e39454e5b0aff6f77120f1ab09386e"
+# define CLIENT_ID "23896355641020e5f7e2292321372280"
+# define CLIENT_SECRET "0a49f062eaaa04561cc4f74d42da6739"
+# define OAUTH_LOCAL_SERVER_PORT 9999
 
 // --- public methods
 SoundCloudApi& SoundCloudApi::getInstance() {
@@ -14,7 +17,7 @@ SoundCloudApi& SoundCloudApi::getInstance() {
 }
 
 void SoundCloudApi::requestStreamUrl(int songId) {
-    static QString urlTemplate("http://api.sndcdn.com/i1/tracks/%1/streams?client_id=" API_KEY);
+    static QString urlTemplate("http://api.sndcdn.com/i1/tracks/%1/streams?client_id=" CLIENT_ID);
 
     QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(songId))));
 
@@ -22,9 +25,9 @@ void SoundCloudApi::requestStreamUrl(int songId) {
 }
 
 void SoundCloudApi::requestLikes() {
-    static QString urlTemplate("http://api.soundcloud.com/users/%1/favorites.json?client_id=" API_KEY);
+    static QString urlTemplate("https://api.soundcloud.com/me/favorites.json?oauth_token=%1");
 
-    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
+    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(oauthAuthenticator->token()))));
 
     waitingLikeReplies.append(reply);
 }
@@ -36,38 +39,38 @@ void SoundCloudApi::requestArtwork(int songId, QUrl artworkUrl) {
 }
 
 void SoundCloudApi::requestPlaylists() {
-    static QString urlTemplate("http://api.soundcloud.com/users/%1/playlists.json?client_id=" API_KEY);
+    static QString urlTemplate("https://api.soundcloud.com/me/playlists.json?oauth_token=%1");
 
-    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(userId))));
+    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(oauthAuthenticator->token()))));
 
     waitingPlaylistReplies.append(reply);
 }
 
-int SoundCloudApi::getUserId() const {
-    return userId;
+void SoundCloudApi::requestAuthentification() {
+    oauthAuthenticator->setGrantFlow(O2::GrantFlowAuthorizationCode);
+    oauthAuthenticator->link();
 }
-
-/* resolves the soundcloud username to the internal user id */
-void SoundCloudApi::setUserPermaLink(QString name) {
-    static QString urlTemplate("http://api.soundcloud.com/resolve.json?url=http://soundcloud.com/%1&client_id=" API_KEY);
-
-    waitingUserIdReply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(name))));
-}
-
-void SoundCloudApi::setUserId(int userId) {
-    this->userId = userId;
-    emit isReady();
-}
-
-
 // --- private methods
 SoundCloudApi::SoundCloudApi() {
-    userId = -1;
-    waitingUserIdReply = NULL;
-
     networkManager = new QNetworkAccessManager(this);
 
+    oauthAuthenticator = new O2(this);
+    oauthRequestor     = new O2Requestor(networkManager, oauthAuthenticator, this);
+
+    oauthAuthenticator->setClientId(CLIENT_ID);
+    oauthAuthenticator->setClientSecret(CLIENT_SECRET);
+    oauthAuthenticator->setScope("non-expiring");
+    oauthAuthenticator->setLocalPort(OAUTH_LOCAL_SERVER_PORT);
+    oauthAuthenticator->setRequestUrl("https://soundcloud.com/connect");
+    oauthAuthenticator->setTokenUrl("https://api.soundcloud.com/oauth2/token");
+
+    // sum connecthunz
     connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(handleFinishedRequest(QNetworkReply*)));
+
+    connect(oauthAuthenticator, SIGNAL(linkedChanged()),    this, SLOT(onOauthLinkedChanged()));
+    connect(oauthAuthenticator, SIGNAL(linkingFailed()),    this, SLOT(onOauthLinkingFailed()));
+    connect(oauthAuthenticator, SIGNAL(linkingSucceeded()), this, SLOT(onOauthLinkingSucceeded()));
+    connect(oauthAuthenticator, SIGNAL(openBrowser(QUrl)),  this, SLOT(onOauthOpenBrowser(QUrl)));
 }
 
 // --- private slots
@@ -77,8 +80,6 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
             handleStreamUrlReply(reply);
         } else if (waitingLikeReplies.contains(reply)) {
             handleLikeReply(reply);
-        } else if (waitingUserIdReply == reply) {
-            handleUserIdReply(reply);
         } else if (waitingArtworkReplies.contains(reply)) {
             handleArtworkReply(reply);
         } else if (waitingPlaylistReplies.contains(reply)) {
@@ -90,9 +91,6 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
         if (waitingStreamUrlReplies.contains(reply)) {
             waitingStreamUrlReplies.remove(reply);
             // emit badStreamUrlRequest?!
-        } else if (reply == waitingUserIdReply) {
-            waitingUserIdReply = NULL;
-            emit badUserIdGiven();
         } else if (waitingLikeReplies.contains(reply)){
             waitingLikeReplies.removeOne(reply);
             // emit badLikeRequest?!
@@ -137,19 +135,6 @@ void SoundCloudApi::handleLikeReply(QNetworkReply *reply) {
     waitingLikeReplies.removeOne(reply);
 
     emit likesReceived(likes);
-}
-
-void SoundCloudApi::handleUserIdReply(QNetworkReply* reply) {
-    waitingUserIdReply  = NULL;
-    QString replyString = reply->readAll();
-
-    bool ok = false;
-    int id = replyString.mid(68, (replyString.indexOf(".json") - 68)).toInt(&ok);
-
-    if (ok && id > 0) {
-        userId = id;
-        emit isReady();
-    }
 }
 
 void SoundCloudApi::handleArtworkReply(QNetworkReply *reply) {
@@ -206,4 +191,27 @@ void SoundCloudApi::handlePlaylistReply(QNetworkReply *reply) {
     waitingPlaylistReplies.removeOne(reply);
 
     emit playlistsReceived(sounds, playlists);
+}
+
+void SoundCloudApi::onOauthLinkedChanged() {
+    if (oauthAuthenticator->linked()) {
+        emit isAuthenticated();
+    } else {
+        emit isNotAuthenticated();
+    }
+}
+
+void SoundCloudApi::onOauthLinkingFailed() {
+    // Login has failed
+    emit isNotAuthenticated();
+}
+
+void SoundCloudApi::onOauthLinkingSucceeded() {
+    // Login has succeeded
+    qDebug() << "Gained auth like a boss!";
+    emit isAuthenticated();
+}
+
+void SoundCloudApi::onOauthOpenBrowser(const QUrl url) {
+    QDesktopServices::openUrl(url);
 }
