@@ -78,10 +78,6 @@ void MainWindow::handleTrayIconActivation(QSystemTrayIcon::ActivationReason acti
     }
 }
 
-void MainWindow::handleAnimationEnd() {
-    ui->footerLabel->setPixmap(QPixmap(":/icons/grey_130x20.png"));
-}
-
 void MainWindow::displayNewSongNotification(QString title, QString user) {
     if (!this->isVisible()) {
         trayIcon->showMessage(QString("Now playing %1").arg(user), title);
@@ -140,7 +136,6 @@ void MainWindow::setupSoundListView() {
     connect(ui->playerWidget, SIGNAL(playbackStarted()), animationGroup, SLOT(start()));
 
     connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
-    connect(animationGroup, SIGNAL(finished()), this, SLOT(handleAnimationEnd()));
 
     connect(ui->likeButton, SIGNAL(clicked()), this, SLOT(switchToLikeDisplay()));
     connect(ui->playlistButton, SIGNAL(clicked()), this, SLOT(switchToPlaylistListingDisplay()));
