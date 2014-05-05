@@ -27,30 +27,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupSoundListView();
     setupReloadButton();
 
-    setupWelcomeScreen();
-
-#ifdef QT_DEBUG
-#else
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
-
-    int uid = settings.value("userId", -1).toInt();
-
-    if (uid < 0) {
+    if (!SoundCloudApi::getInstance().isAuthenticated()) {
         setupWelcomeScreen();
-    } else {
-        SoundCloudApi::getInstance().setUserId(uid);
     }
-#endif
 }
 
 MainWindow::~MainWindow() {
-#ifndef QT_DEBUG
-    int uid = SoundCloudApi::getInstance().getUserId();
-
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/scplay/config.ini", QSettings::IniFormat);
-    settings.setValue("userId", uid);
-#endif
-
     delete ui;
 }
 
