@@ -84,7 +84,8 @@ void MainWindow::setupTrayIcon() {
     trayIcon->setContextMenu(trayMenu);
     trayIcon->show();
 
-    connect(ui->playerWidget, SIGNAL(songChanged(QString,QString)), this, SLOT(displayNewSongNotification(QString,QString)));
+    connect(ui->playerWidget, SIGNAL(songChanged(QString,QString)),
+            this, SLOT(displayNewSongNotification(QString,QString)));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(handleTrayIconActivation(QSystemTrayIcon::ActivationReason)));
 }
