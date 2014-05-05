@@ -21,6 +21,8 @@ class SoundCloudApi : public QObject
 public:
     static SoundCloudApi& getInstance();
 
+    bool isAuthenticated();
+
     void requestStreamUrl(int songId);
     void requestLikes();
     void requestArtwork(int songId, QUrl artworkUrl);
@@ -31,8 +33,8 @@ signals:
     void streamUrlReceived(int songId, QUrl streamUrl);
     void likesReceived(QList<Sound> likes);
     void artworkReceived(int songId, QPixmap& artwork);
-    void isAuthenticated(); // emitted when a valid profile id has been set
-    void isNotAuthenticated();
+    void authenticated(); // emitted when a valid profile id has been set
+    void notAuthenticated();
     void playlistsReceived(QList<Sound> sounds, QList<Playlist> playlists);
 
 // === privates =================================

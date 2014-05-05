@@ -16,6 +16,10 @@ SoundCloudApi& SoundCloudApi::getInstance() {
     return instance;
 }
 
+bool SoundCloudApi::isAuthenticated() {
+    return oauthAuthenticator->linked();
+}
+
 void SoundCloudApi::requestStreamUrl(int songId) {
     static QString urlTemplate("http://api.sndcdn.com/i1/tracks/%1/streams?client_id=" CLIENT_ID);
 
@@ -195,15 +199,15 @@ void SoundCloudApi::handlePlaylistReply(QNetworkReply *reply) {
 
 void SoundCloudApi::onOauthLinkedChanged() {
     if (oauthAuthenticator->linked()) {
-        emit isAuthenticated();
+        emit authenticated();
     } else {
-        emit isNotAuthenticated();
+        emit notAuthenticated();
     }
 }
 
 void SoundCloudApi::onOauthLinkingFailed() {
     // Login has failed
-    emit isNotAuthenticated();
+    emit notAuthenticated();
 }
 
 void SoundCloudApi::onOauthLinkingSucceeded() {
