@@ -50,6 +50,14 @@ void SoundCloudApi::requestPlaylists() {
     waitingPlaylistReplies.append(reply);
 }
 
+void SoundCloudApi::requestActivities() {
+    static QString urlTemplate("https://api.soundcloud.com/me/activities.json?oauth_token=%1");
+
+    QNetworkReply* reply = networkManager->get(QNetworkRequest(QUrl(urlTemplate.arg(oauthAuthenticator->token()))));
+
+    waitingActivityReplies.append(reply);
+}
+
 void SoundCloudApi::requestAuthentification() {
     oauthAuthenticator->setGrantFlow(O2::GrantFlowAuthorizationCode);
     oauthAuthenticator->link();
@@ -77,6 +85,40 @@ SoundCloudApi::SoundCloudApi() {
     connect(oauthAuthenticator, SIGNAL(openBrowser(QUrl)),  this, SLOT(onOauthOpenBrowser(QUrl)));
 }
 
+Sound SoundCloudApi::parseSoundJson(const QJsonObject &soundJson) {
+    Sound sound;
+
+    sound.setId(soundJson["id"].toInt());
+    sound.setTitle(soundJson["title"].toString());
+    sound.setUser(soundJson["user"].toObject()["username"].toString());
+    sound.setArtworkUrl(soundJson["artwork_url"].toString());
+
+    return sound;
+}
+
+Playlist SoundCloudApi::parsePlaylistJson(const QJsonObject &playlistJson, QList<Sound>& containedSounds) {
+    // read all tracks from this playlist
+    QJsonArray playlistSoundsJson = playlistJson["tracks"].toArray();
+    QList<int> playlistSoundIds;
+
+    for (QJsonArray::const_iterator psit = playlistSoundsJson.begin(); psit != playlistSoundsJson.end(); ++psit) {
+        QJsonObject soundJson = (*psit).toObject();
+
+        containedSounds.append(parseSoundJson(soundJson));
+        playlistSoundIds.append(containedSounds.last().getId());
+    }
+
+    // provide some information about this playlist
+    Playlist playlist(playlistSoundIds);
+
+    playlist.setId(playlistJson["id"].toInt());
+    playlist.setUser(playlistJson["user"].toObject()["username"].toString());
+    playlist.setTitle(playlistJson["title"].toString());
+    playlist.setArtworkUrl(playlistJson["artwork_url"].toString());
+
+    return playlist;
+}
+
 // --- private slots
 void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
@@ -88,18 +130,27 @@ void SoundCloudApi::handleFinishedRequest(QNetworkReply *reply) {
             handleArtworkReply(reply);
         } else if (waitingPlaylistReplies.contains(reply)) {
             handlePlaylistReply(reply);
+        } else if (waitingActivityReplies.contains(reply)) {
+            handleActivityReply(reply);
         }
     } else {
         qDebug("Network error %i | %s", (int)reply->error(), reply->url().toString().toStdString().c_str());
 
         if (waitingStreamUrlReplies.contains(reply)) {
             waitingStreamUrlReplies.remove(reply);
+            qDebug() << "bad stream request";
             // emit badStreamUrlRequest?!
         } else if (waitingLikeReplies.contains(reply)){
             waitingLikeReplies.removeOne(reply);
+            qDebug() << "bad like request";
             // emit badLikeRequest?!
         } else if (waitingPlaylistReplies.contains(reply)) {
+            waitingPlaylistReplies.removeOne(reply);
+            qDebug() << "bad playlist request";
             // emit badPlaylistRequest?!
+        } else if (waitingActivityReplies.contains(reply)) {
+            waitingActivityReplies.removeOne(reply);
+            qDebug() << "bad activity request";
         }
     }
 }
@@ -126,14 +177,7 @@ void SoundCloudApi::handleLikeReply(QNetworkReply *reply) {
     for (QJsonArray::const_iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
         songObject = (*it).toObject();
 
-        Sound like;
-
-        like.setId(songObject["id"].toInt());
-        like.setTitle(songObject["title"].toString());
-        like.setUser(songObject["user"].toObject()["username"].toString());
-        like.setArtworkUrl(songObject["artwork_url"].toString());
-
-        likes.append(like);
+        likes.append(parseSoundJson(songObject));
     }
 
     waitingLikeReplies.removeOne(reply);
@@ -162,39 +206,38 @@ void SoundCloudApi::handlePlaylistReply(QNetworkReply *reply) {
     for (QJsonArray::const_iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
         QJsonObject playlistJson = (*it).toObject();
 
-        QList<int> playlistSounds;
-
-        // read all tracks from this playlist
-        QJsonArray playlistSoundsJson = playlistJson["tracks"].toArray();
-
-        for (QJsonArray::const_iterator psit = playlistSoundsJson.begin(); psit != playlistSoundsJson.end(); ++psit) {
-            QJsonObject soundJson = (*psit).toObject();
-
-            Sound sound;
-
-            sound.setId(soundJson["id"].toInt());
-            sound.setTitle(soundJson["title"].toString());
-            sound.setUser(soundJson["user"].toObject()["username"].toString());
-            sound.setArtworkUrl(soundJson["artwork_url"].toString());
-
-            sounds.append(sound);
-            playlistSounds.append(sound.getId());
-        }
-
-        // provide some information about this playlist
-        Playlist playlist(playlistSounds);
-
-        playlist.setId(playlistJson["id"].toInt());
-        playlist.setUser(playlistJson["user"].toObject()["username"].toString());
-        playlist.setTitle(playlistJson["title"].toString());
-        playlist.setArtworkUrl(playlistJson["artwork_url"].toString());
-
-        playlists.append(playlist);
+        playlists.append(parsePlaylistJson(playlistJson, sounds));
     }
 
     waitingPlaylistReplies.removeOne(reply);
 
     emit playlistsReceived(sounds, playlists);
+}
+
+void SoundCloudApi::handleActivityReply(QNetworkReply *reply) {
+    QString       replyString = QString(reply->readAll());
+    QJsonObject   jsonObject  = QJsonDocument::fromJson(replyString.toUtf8()).object();
+    QJsonArray    jsonArray   = jsonObject["collection"].toArray();
+
+    QList<Sound>    sounds;
+    QList<Playlist> playlists;
+    QList< QPair<int,QString> > idsAndTypes;
+
+    for (QJsonArray::const_iterator it = jsonArray.begin(); it != jsonArray.end(); ++it) {
+        QJsonObject listElement = (*it).toObject();
+
+        if (listElement["type"].toString() == QString("track")) {
+            sounds.append(parseSoundJson(listElement["origin"].toObject()));
+            idsAndTypes.append(QPair<int,QString>(sounds.last().getId(), "track"));
+        } else if (listElement["type"].toString() == QString("playlist")) {
+            playlists.append(parsePlaylistJson(listElement["origin"].toObject(), sounds));
+            idsAndTypes.append(QPair<int,QString>(playlists.last().getId(), "playlist"));
+        }
+    }
+
+    waitingActivityReplies.removeOne(reply);
+
+    emit activitiesReceived(idsAndTypes, sounds, playlists);
 }
 
 void SoundCloudApi::onOauthLinkedChanged() {

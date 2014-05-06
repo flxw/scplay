@@ -7,6 +7,7 @@
 # include "likemodel.h"
 # include "soundstorage.h"
 # include "playlistmodel.h"
+# include "activitylistmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,9 @@ public slots:
 
     void switchToPlaylistListingDisplay();
     void switchToLikeDisplay();
+    void switchToActivityDisplay();
+
+    void selectPlaylist(QModelIndex index);
 
     // --- private section ----------------------
 private:
@@ -38,12 +42,12 @@ private:
     void setupReloadButton();
     void handleTrayIconSingleClick();
 
-
-    // --- attributes
+    // --- attributes ---------------------------
 private:
-    LikeModel *likeModel;
-    PlaylistModel *playlistModel;
-    SoundStorage *soundStorage;
+    LikeModel         *likeModel;
+    PlaylistModel     *playlistModel;
+    SoundStorage      *soundStorage;
+    ActivityListModel *activityModel;
 
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;

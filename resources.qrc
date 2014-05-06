@@ -6,4 +6,10 @@
         <file>grey_130x20.png</file>
         <file>reload.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>icons/refresh.png</file>
+        <file>icons/soundcloud_cloud_18x10.png</file>
+        <file>icons/playlists.png</file>
+        <file>icons/likes.png</file>
+    </qresource>
 </RCC>

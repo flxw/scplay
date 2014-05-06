@@ -27,15 +27,18 @@ public:
     void requestLikes();
     void requestArtwork(int songId, QUrl artworkUrl);
     void requestPlaylists();
+    void requestActivities();
     void requestAuthentification();
 
 signals:
     void streamUrlReceived(int songId, QUrl streamUrl);
     void likesReceived(QList<Sound> likes);
     void artworkReceived(int songId, QPixmap& artwork);
-    void authenticated(); // emitted when a valid profile id has been set
-    void notAuthenticated();
     void playlistsReceived(QList<Sound> sounds, QList<Playlist> playlists);
+    void activitiesReceived(QList< QPair<int,QString> > idsAndTypes, QList<Sound> sounds, QList<Playlist> playlists);
+
+    void authenticated();
+    void notAuthenticated();
 
 // === privates =================================
 private:
@@ -43,12 +46,16 @@ private:
     SoundCloudApi(SoundCloudApi const&);   // Don't Implement
     void operator=(SoundCloudApi const&);// Don't implement
 
+    Sound parseSoundJson(const QJsonObject& soundJson);
+    Playlist parsePlaylistJson(const QJsonObject& playlistJson, QList<Sound>& containedSounds);
+
 private slots:
     void handleFinishedRequest(QNetworkReply *reply);
     void handleStreamUrlReply(QNetworkReply *reply);
     void handleLikeReply(QNetworkReply *reply);
     void handleArtworkReply(QNetworkReply *reply);
     void handlePlaylistReply(QNetworkReply *reply);
+    void handleActivityReply(QNetworkReply *reply);
 
     void onOauthLinkedChanged();
     void onOauthLinkingFailed();
@@ -61,6 +68,7 @@ private:
     QHash<QNetworkReply*, int> waitingArtworkReplies;
     QList<QNetworkReply*>      waitingLikeReplies;
     QList<QNetworkReply*>      waitingPlaylistReplies;
+    QList<QNetworkReply*>      waitingActivityReplies;
 
     QNetworkAccessManager* networkManager;
 

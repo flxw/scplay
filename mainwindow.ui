@@ -35,7 +35,7 @@
      <rect>
       <x>10</x>
       <y>375</y>
-      <width>260</width>
+      <width>191</width>
       <height>20</height>
      </rect>
     </property>
@@ -80,7 +80,36 @@
      <property name="spacing">
       <number>0</number>
      </property>
-     <item row="0" column="0" colspan="2">
+     <item row="1" column="2">
+      <widget class="QPushButton" name="playlistButton">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>18</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Playlists</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/playlists.png</normaloff>:/icons/playlists.png</iconset>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="3">
       <widget class="QListView" name="songView">
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -89,8 +118,24 @@
      </item>
      <item row="1" column="0">
       <widget class="QPushButton" name="likeButton">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>18</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>22</height>
+        </size>
+       </property>
        <property name="text">
         <string>Likes</string>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/likes.png</normaloff>:/icons/likes.png</iconset>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -104,9 +149,28 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QPushButton" name="playlistButton">
-       <property name="text">
-        <string>Playlists</string>
+      <widget class="QPushButton" name="streamButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>30</width>
+         <height>22</height>
+        </size>
+       </property>
+       <property name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/icons/soundcloud_cloud_18x10.png</normaloff>:/icons/soundcloud_cloud_18x10.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>18</width>
+         <height>18</height>
+        </size>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -121,17 +185,30 @@
    <widget class="QPushButton" name="reloadButton">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>209</x>
       <y>375</y>
-      <width>20</width>
+      <width>81</width>
       <height>20</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>Refresh</string>
+     <string>Sync displayed likes and playlists</string>
     </property>
     <property name="styleSheet">
-     <string notr="true">border-image: url(:/icons/reload.png);</string>
+     <string notr="true"/>
+    </property>
+    <property name="text">
+     <string>Refresh</string>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>11</width>
+      <height>11</height>
+     </size>
     </property>
    </widget>
   </widget>

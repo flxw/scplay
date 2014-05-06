@@ -12,6 +12,7 @@
 # include "playerwidget.h"
 # include "introwidget.h"
 # include "soundlistdelegate.h"
+# include "playlistsoundlistmodel.h"
 
 # define VERSION "0.1.6"
 
@@ -29,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
 
     if (!SoundCloudApi::getInstance().isAuthenticated()) {
         setupWelcomeScreen();
+    } else {
+        soundStorage->fill();
     }
 }
 
@@ -94,12 +97,12 @@ void MainWindow::setupModels() {
     soundStorage  = new SoundStorage(this);
     likeModel     = new LikeModel(soundStorage, this);
     playlistModel = new PlaylistModel(soundStorage, this);
+    activityModel = new ActivityListModel(soundStorage, this);
 
     connect(&SoundCloudApi::getInstance(), SIGNAL(authenticated()), soundStorage, SLOT(fill()));
 }
 
 void MainWindow::setupSoundListView() {
-    ui->songView->setModel(likeModel);
     ui->songView->setItemDelegate(new SoundListDelegate(this));
 
     QParallelAnimationGroup *animationGroup = new QParallelAnimationGroup(this);
@@ -116,13 +119,14 @@ void MainWindow::setupSoundListView() {
     animationGroup->addAnimation(slideInAnimation);
     animationGroup->addAnimation(shrinkAnimation);
 
-    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
-    connect(ui->playerWidget, SIGNAL(playbackStarted()), animationGroup, SLOT(start()));
-
     connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
 
-    connect(ui->likeButton, SIGNAL(clicked()), this, SLOT(switchToLikeDisplay()));
+    connect(ui->playerWidget, SIGNAL(playbackStarted()), animationGroup, SLOT(start()));
+    connect(ui->likeButton,     SIGNAL(clicked()), this, SLOT(switchToLikeDisplay()));
     connect(ui->playlistButton, SIGNAL(clicked()), this, SLOT(switchToPlaylistListingDisplay()));
+    connect(ui->streamButton,   SIGNAL(clicked()), this, SLOT(switchToActivityDisplay()));
+
+    switchToLikeDisplay();
 }
 
 void MainWindow::setupWelcomeScreen() {
@@ -194,12 +198,39 @@ void MainWindow::switchToPlaylistListingDisplay() {
     disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 
     ui->songView->setModel(playlistModel);
+    ui->playlistButton->setStyleSheet("font-style: normal;");
+    ui->playlistButton->setText(QString("Playlists"));
+
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 }
 
 void MainWindow::switchToLikeDisplay() {
-    disconnect(ui->songView);
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)));
 
     ui->songView->setModel(likeModel);
 
+    connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+}
+
+void MainWindow::switchToActivityDisplay() {
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+
+    ui->songView->setModel(activityModel);
+}
+
+void MainWindow::selectPlaylist(QModelIndex index) {
+    // introducing a possible memory leak here....
+    PlaylistSoundListModel *playlistSoundModel = new PlaylistSoundListModel(soundStorage);
+    int selectedPlaylistId = ((ListModelBase*)index.model())->getItem(index).getId();
+    Playlist selectedPlaylist = soundStorage->getPlaylistById(selectedPlaylistId);
+
+    playlistSoundModel->updateSoundIds(selectedPlaylist.getSounds());
+
+    ui->playlistButton->setStyleSheet("font-style: italic");
+    ui->playlistButton->setText(selectedPlaylist.getTitle());
+
+    // put the model and connections into place here
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
+    ui->songView->setModel(playlistSoundModel);
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 }
