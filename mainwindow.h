@@ -21,7 +21,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void focusOutEvent(QFocusEvent *e);
+    bool event(QEvent* e);
 
 public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
