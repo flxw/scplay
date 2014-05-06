@@ -204,6 +204,7 @@ void MainWindow::handleTrayIconSingleClick() {
 
 void MainWindow::switchToPlaylistListingDisplay() {
     disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 
     ui->songView->setModel(playlistModel);
     ui->playlistButton->setStyleSheet("font-style: normal;");
@@ -214,6 +215,7 @@ void MainWindow::switchToPlaylistListingDisplay() {
 
 void MainWindow::switchToLikeDisplay() {
     disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)));
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 
     ui->songView->setModel(likeModel);
 
@@ -222,6 +224,7 @@ void MainWindow::switchToLikeDisplay() {
 
 void MainWindow::switchToActivityDisplay() {
     disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
+    disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 
     ui->songView->setModel(activityModel);
 }
