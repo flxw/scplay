@@ -25,4 +25,6 @@ Sound ActivityListModel::getItem(const QModelIndex& index) const {
 
 void ActivityListModel::updateActivities(QList< QPair<int, QString> > activities) {
     idsAndTypes = activities;
+
+    emit dataChanged(QModelIndex(), QModelIndex());
 }

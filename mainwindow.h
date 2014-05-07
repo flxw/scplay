@@ -4,10 +4,7 @@
 # include <QMainWindow>
 # include <QSystemTrayIcon>
 
-# include "likemodel.h"
-# include "soundstorage.h"
-# include "playlistmodel.h"
-# include "activitylistmodel.h"
+# include "soundlistview.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,28 +24,16 @@ public slots:
     void handleTrayIconActivation(QSystemTrayIcon::ActivationReason activationReason);
     void displayNewSongNotification(QString title,QString user);
 
-    void switchToPlaylistListingDisplay();
-    void switchToLikeDisplay();
-    void switchToActivityDisplay();
-
-    void selectPlaylist(QModelIndex index);
-
     // --- private section ----------------------
 private:
     void setupTrayIcon();
-    void setupModels();
-    void setupSoundListView();
+    void setupAnimation();
     void setupWelcomeScreen();
     void setupReloadButton();
     void handleTrayIconSingleClick();
 
     // --- attributes ---------------------------
 private:
-    LikeModel         *likeModel;
-    PlaylistModel     *playlistModel;
-    SoundStorage      *soundStorage;
-    ActivityListModel *activityModel;
-
     Ui::MainWindow  *ui;
     QSystemTrayIcon *trayIcon;
 };

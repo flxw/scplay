@@ -110,7 +110,7 @@
       </widget>
      </item>
      <item row="2" column="0" colspan="3">
-      <widget class="QListView" name="songView">
+      <widget class="SoundListView" name="soundListView">
        <property name="horizontalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
@@ -138,9 +138,6 @@
          <normaloff>:/icons/likes.png</normaloff>:/icons/likes.png</iconset>
        </property>
        <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
         <bool>true</bool>
        </property>
        <property name="autoExclusive">
@@ -173,6 +170,9 @@
         </size>
        </property>
        <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
         <bool>true</bool>
        </property>
        <property name="autoExclusive">
@@ -220,6 +220,11 @@
    <extends>QWidget</extends>
    <header>playerwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SoundListView</class>
+   <extends>QListView</extends>
+   <header>soundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources>
