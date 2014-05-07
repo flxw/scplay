@@ -218,6 +218,8 @@ void MainWindow::switchToLikeDisplay() {
     disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 
     ui->songView->setModel(likeModel);
+    ui->playlistButton->setStyleSheet("font-style: normal;");
+    ui->playlistButton->setText(QString("Playlists"));
 
     connect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 }
@@ -227,11 +229,13 @@ void MainWindow::switchToActivityDisplay() {
     disconnect(ui->songView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 
     ui->songView->setModel(activityModel);
+    ui->playlistButton->setStyleSheet("font-style: normal;");
+    ui->playlistButton->setText(QString("Playlists"));
 }
 
 void MainWindow::selectPlaylist(QModelIndex index) {
     // introducing a possible memory leak here....
-    PlaylistSoundListModel *playlistSoundModel = new PlaylistSoundListModel(soundStorage);
+    PlaylistSoundListModel *playlistSoundModel = new PlaylistSoundListModel(soundStorage, this);
     int selectedPlaylistId = ((ListModelBase*)index.model())->getItem(index).getId();
     Playlist selectedPlaylist = soundStorage->getPlaylistById(selectedPlaylistId);
 
