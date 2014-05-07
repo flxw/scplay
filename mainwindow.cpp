@@ -4,7 +4,6 @@
 # include <QMenu>
 # include <QPropertyAnimation>
 # include <QParallelAnimationGroup>
-# include <QSettings>
 # include <QStandardPaths>
 
 # include "soundcloudapi.h"
