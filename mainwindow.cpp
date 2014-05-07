@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupAnimation();
     setupTrayIcon();
     setupReloadButton();
+    setupSoundList();
 
     if (!SoundCloudApi::getInstance().isAuthenticated()) {
         setupWelcomeScreen();
@@ -115,9 +116,6 @@ void MainWindow::setupAnimation() {
     connect(animationGroup, SIGNAL(finished()), animationGroup, SLOT(deleteLater()));
 
     connect(ui->playerWidget, SIGNAL(playbackStarted()), animationGroup, SLOT(start()));
-    connect(ui->likeButton,     SIGNAL(clicked()), ui->soundListView, SLOT(switchToLikeDisplay()));
-    connect(ui->playlistButton, SIGNAL(clicked()), ui->soundListView, SLOT(switchToPlaylistListingDisplay()));
-    connect(ui->streamButton,   SIGNAL(clicked()), ui->soundListView, SLOT(switchToActivityDisplay()));
 }
 
 void MainWindow::setupWelcomeScreen() {
@@ -153,6 +151,14 @@ void MainWindow::setupWelcomeScreen() {
 
 void MainWindow::setupReloadButton() {
     connect(ui->reloadButton, SIGNAL(clicked()), ui->soundListView, SLOT(refresh()));
+}
+
+void MainWindow::setupSoundList() {
+    connect(ui->likeButton,     SIGNAL(clicked()), ui->soundListView, SLOT(switchToLikeDisplay()));
+    connect(ui->playlistButton, SIGNAL(clicked()), ui->soundListView, SLOT(switchToPlaylistListingDisplay()));
+    connect(ui->streamButton,   SIGNAL(clicked()), ui->soundListView, SLOT(switchToActivityDisplay()));
+
+    connect(ui->soundListView, SIGNAL(soundSelected(QModelIndex)), ui->playerWidget, SLOT(handlePlayRequest(QModelIndex)));
 }
 
 void MainWindow::handleTrayIconSingleClick() {

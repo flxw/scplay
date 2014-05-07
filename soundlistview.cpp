@@ -65,5 +65,11 @@ void SoundListView::selectPlaylist(QModelIndex index) {
 }
 
 void SoundListView::selectActivity(QModelIndex activityIndex) {
+    if (activityModel->isPlaylistSelected(activityIndex.row())) {
+        disconnect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectActivity(QModelIndex)));
 
+        selectPlaylist(activityIndex);
+    } else {
+        emit soundSelected(activityIndex);
+    }
 }

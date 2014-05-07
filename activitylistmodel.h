@@ -11,8 +11,9 @@ public:
     explicit ActivityListModel(const SoundStorage *storage, QObject *parent = 0);
 
 
-    int   rowCount(const QModelIndex&) const;
     Sound getItem(const QModelIndex& index) const;
+    int  rowCount(const QModelIndex&) const;
+    bool isPlaylistSelected(const int &idx) const;
 
 public slots:
     void updateActivities(QList< QPair<int,QString> > activities);

@@ -30,6 +30,8 @@ private:
     void setupAnimation();
     void setupWelcomeScreen();
     void setupReloadButton();
+    void setupSoundList();
+
     void handleTrayIconSingleClick();
 
     // --- attributes ---------------------------
