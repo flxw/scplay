@@ -11,7 +11,7 @@
 # include "playerwidget.h"
 # include "introwidget.h"
 
-# define VERSION "0.1.6"
+# define VERSION "0.2.0"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
 {
