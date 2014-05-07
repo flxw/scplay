@@ -256,7 +256,7 @@ void SoundCloudApi::onOauthLinkingFailed() {
 void SoundCloudApi::onOauthLinkingSucceeded() {
     // Login has succeeded
     qDebug() << "Gained auth like a boss!";
-    emit isAuthenticated();
+    emit authenticated();
 }
 
 void SoundCloudApi::onOauthOpenBrowser(const QUrl url) {

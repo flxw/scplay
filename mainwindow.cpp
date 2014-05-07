@@ -25,11 +25,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent, Qt::FramelessWindo
     setupReloadButton();
     setupSoundList();
 
+#ifdef QT_DEBUG
+    setupWelcomeScreen();
+#else
     if (!SoundCloudApi::getInstance().isAuthenticated()) {
         setupWelcomeScreen();
     } else {
         ui->soundListView->refresh();
     }
+#endif
 }
 
 MainWindow::~MainWindow() {
@@ -140,7 +144,7 @@ void MainWindow::setupWelcomeScreen() {
     helloUserFrame->setStyleSheet("background-color: #333;");
 
     connect(&SoundCloudApi::getInstance(), SIGNAL(authenticated()), slideOutAnimation1, SLOT(start()));
-    connect(&SoundCloudApi::getInstance(), SIGNAL(authenticated()), ui->soundListView, SLOT(refresh()));
+    connect(&SoundCloudApi::getInstance(), SIGNAL(authenticated()), ui->soundListView,  SLOT(refresh()));
 
     connect(slideOutAnimation1, SIGNAL(finished()), slideOutAnimation1, SLOT(deleteLater()));
     connect(slideOutAnimation1, SIGNAL(finished()), introScreen, SLOT(setFocus()));

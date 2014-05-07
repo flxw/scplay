@@ -39,7 +39,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>210</y>
+     <y>170</y>
      <width>221</width>
      <height>51</height>
     </rect>
@@ -61,10 +61,26 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">color: #333;</string>
+    <string notr="true">color: #fefefe;</string>
    </property>
    <property name="text">
     <string>Log in!</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>240</y>
+     <width>211</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Click the button below to open a page in your browser, that allows scplay to access your account!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
