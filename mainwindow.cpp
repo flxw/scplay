@@ -80,7 +80,7 @@ void MainWindow::displayNewSongNotification(QString title, QString user) {
 
 // --- private functions
 void MainWindow::setupTrayIcon() {
-    trayIcon = new QSystemTrayIcon(QIcon(":/icons/white.png"), this);
+    trayIcon = new QSystemTrayIcon(QIcon(":/icons/systray.png"), this);
 
     QMenu* trayMenu = new QMenu();
     QAction* versionBar = new QAction("scplay " VERSION, this);

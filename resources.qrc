@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>white.png</file>
         <file>white_192x116.png</file>
         <file>placeholder.png</file>
         <file>grey_130x20.png</file>
@@ -11,5 +10,7 @@
         <file>icons/soundcloud_cloud_18x10.png</file>
         <file>icons/playlists.png</file>
         <file>icons/likes.png</file>
+        <file>icons/systray.png</file>
+        <file>icons/powered-by-soundcloud.png</file>
     </qresource>
 </RCC>
