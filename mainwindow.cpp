@@ -87,9 +87,9 @@ void MainWindow::setupTrayIcon() {
     QAction* versionBar = new QAction("scplay " VERSION, this);
     versionBar->setDisabled(true);
 
-    trayMenu->addAction("\u25B6 / \u2016",    ui->playerWidget, SLOT(togglePlayPause()));
-    trayMenu->addAction("\u25B6\u25B6\u007C", ui->playerWidget, SLOT(playNextSong()));
-    trayMenu->addAction("\u007C\u25C0\u25C0", ui->playerWidget, SLOT(playPreviousSong()));
+    trayMenu->addAction("Play (toggle)",    ui->playerWidget, SLOT(togglePlayPause()));
+    trayMenu->addAction("Next", ui->playerWidget, SLOT(playNextSong()));
+    trayMenu->addAction("Previous", ui->playerWidget, SLOT(playPreviousSong()));
     trayMenu->addAction("Exit", this, SLOT(close()));
     trayMenu->addAction(versionBar);
 
