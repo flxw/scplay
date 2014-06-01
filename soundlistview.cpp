@@ -21,7 +21,7 @@ void SoundListView::switchToPlaylistListingDisplay() {
 }
 
 void SoundListView::switchToLikeDisplay() {
-    disconnect(this, SIGNAL(doubleClicked(QModelIndex)));
+    disconnect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectActivity(QModelIndex)));
     disconnect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
 
     this->setModel(likeModel);
@@ -61,7 +61,7 @@ void SoundListView::selectPlaylist(QModelIndex index) {
     this->setModel(playlistSoundModel);
 
     disconnect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPlaylist(QModelIndex)));
-    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(soundSelected(QModelIndex)));
+    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(soundSelected(QModelIndex)));
 }
 
 void SoundListView::selectActivity(QModelIndex activityIndex) {
