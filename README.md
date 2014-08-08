@@ -20,11 +20,12 @@ permalink profile ID, which you can extract from the permalink to you profile. M
 From there on, simply double-click your songs inside the list to play them. The application
 will hide itself once you click elsewhere on the screen. To bring it back up, click on the icon in the systray.
 
-![Initial scplay screen](https://github.com/flxw/scplay/tree/master/images/initial.png)
+![Initial scplay screen](https://github.com/flxw/scplay/blob/master/images/initial.png)
 
 ## Version
 To find out your version number, right-click the icon in your systray. Always be sure to make use of the latest one ;)
-![finding out your version-number](https://github.com/flxw/scplay/tree/master/images/finding-version-number.png)
+
+![finding out your version-number](https://github.com/flxw/scplay/blob/master/images/finding-version-number.png)
 
 ## Endorsement
 At the moment of writing, I am not affiliated with or endorsed by SoundCloud.
